@@ -11,13 +11,43 @@ import LineString from 'ol/geom/LineString'
 import { fromLonLat } from 'ol/proj'
 import { Style, Icon, Stroke } from 'ol/style'
 import { mockEntities } from '../../types/entities'
+import type { Entity } from '../../types/entities'
+import { useSimulationStore } from '../../store/SimulationStore'
 import ms from 'milsymbol'
 import 'ol/ol.css'
 import './MapPanel.css'
 
+const createEntityStyle = (entity: Entity): Style => {
+  const symbol = new ms.Symbol(entity.natoCode, {
+    size: 30
+  })
+  
+  return new Style({
+    image: new Icon({
+      img: symbol.asCanvas(),
+      imgSize: [symbol.getSize().width, symbol.getSize().height]
+    })
+  })
+}
+
+const createRouteStyle = (entity: Entity): Style => {
+  const isDamaged = entity.status === 'damaged'
+  
+  return new Style({
+    stroke: new Stroke({
+      color: entity.faction === 'human' 
+        ? 'rgba(0, 100, 255, 0.6)'
+        : 'rgba(255, 0, 0, 0.6)',
+      width: isDamaged ? 1.5 : 2,
+      lineDash: [5, 5]
+    })
+  })
+}
+
 const MapPanel = () => {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<Map | null>(null)
+  const setSelectedEntity = useSimulationStore((state) => state.setSelectedEntity)
 
   useEffect(() => {
     if (!mapRef.current) return
@@ -25,37 +55,22 @@ const MapPanel = () => {
     const vectorSource = new VectorSource()
 
     mockEntities.forEach(entity => {
-      const symbol = new ms.Symbol(entity.natoCode, {
-        size: 30
-      })
-      
       const feature = new Feature({
         geometry: new Point(fromLonLat(entity.position)),
         entity: entity
       })
-
-      feature.setStyle(new Style({
-        image: new Icon({
-          img: symbol.asCanvas(),
-          imgSize: [symbol.getSize().width, symbol.getSize().height]
-        })
-      }))
-
+      
+      feature.setStyle(createEntityStyle(entity))
       vectorSource.addFeature(feature)
 
-      const routeFeature = new Feature({
-        geometry: new LineString(entity.route.map(coord => fromLonLat(coord)))
-      })
-
-      routeFeature.setStyle(new Style({
-        stroke: new Stroke({
-          color: 'rgba(255, 0, 0, 0.6)',
-          width: 2,
-          lineDash: [5, 5]
+      if (entity.route && entity.route.length > 1) {
+        const routeFeature = new Feature({
+          geometry: new LineString(entity.route.map(coord => fromLonLat(coord)))
         })
-      }))
-
-      vectorSource.addFeature(routeFeature)
+        
+        routeFeature.setStyle(createRouteStyle(entity))
+        vectorSource.addFeature(routeFeature)
+      }
     })
 
     const vectorLayer = new VectorLayer({
@@ -71,8 +86,8 @@ const MapPanel = () => {
         vectorLayer
       ],
       view: new View({
-        center: fromLonLat([18.315031623126444, 49.839447794058735]),
-        zoom: 13
+        center: fromLonLat([18.332, 49.852]),
+        zoom: 12.5
       })
     })
 
@@ -80,9 +95,15 @@ const MapPanel = () => {
       map.forEachFeatureAtPixel(evt.pixel, (feature) => {
         const entity = feature.get('entity')
         if (entity) {
-          console.log('Selected entity:', entity)
+          setSelectedEntity(entity)
         }
       })
+    })
+
+    map.on('pointermove', (evt) => {
+      const pixel = map.getEventPixel(evt.originalEvent)
+      const hit = map.hasFeatureAtPixel(pixel)
+      map.getTargetElement().style.cursor = hit ? 'pointer' : ''
     })
 
     mapInstanceRef.current = map
@@ -90,11 +111,20 @@ const MapPanel = () => {
     return () => {
       map.setTarget(undefined)
     }
-  }, [])
+  }, [setSelectedEntity])
 
   return (
     <div className="panel map-panel">
-      <div className="panel-header">Map</div>
+      <div className="panel-header">
+        Tactical Map
+        <span style={{ 
+          fontSize: '12px', 
+          marginLeft: '10px', 
+          opacity: 0.7 
+        }}>
+          🔵 Human Forces | 🔴 Alien Invaders
+        </span>
+      </div>
       <div className="panel-content map-content">
         <div ref={mapRef} className="map-container"></div>
       </div>
