@@ -12,26 +12,30 @@ const SimulationControl = () => {
     const tick = useSimulationStore((state) => state.tick)
     
     const lastTickRef = useRef<number>(Date.now())
-    const animationFrameRef = useRef<number>()
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   
     useEffect(() => {
-      const animate = () => {
-        const now = Date.now()
-        const deltaTime = (Date.now() - lastTickRef.current) / 1000
-        lastTickRef.current = now
-  
-        if (isRunning) {
+      if (isRunning) {
+        lastTickRef.current = Date.now()
+        
+        intervalRef.current = setInterval(() => {
+          const now = Date.now()
+          const deltaTime = (now - lastTickRef.current) / 1000
+          lastTickRef.current = now
+          
           tick(deltaTime)
+        }, 1000 / 60)
+      } else {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
         }
-  
-        animationFrameRef.current = requestAnimationFrame(animate)
       }
   
-      animationFrameRef.current = requestAnimationFrame(animate)
-  
       return () => {
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
         }
       }
     }, [isRunning, tick])

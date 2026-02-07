@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Entity } from '../types/entities'
-import { moveEntity, checkCollision, resolveCombat } from '../services/Simulationengine'
+import { moveEntity, checkCollision, resolveCombat, hasReachedDestination } from '../services/Simulationengine'
 import { mockEntities } from '../types/entities'
 
 interface SimulationState {
@@ -87,9 +87,14 @@ export const useSimulationStore = create<SimulationState>((set) => ({
     
     updatedEntities = Array.from(entityMap.values())
     
+    const allFinished = updatedEntities.every(entity => 
+      entity.status === 'destroyed' || hasReachedDestination(entity)
+    )
+    
     return { 
       entities: updatedEntities,
-      combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50)
+      combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50),
+      isRunning: allFinished ? false : state.isRunning
     }
   }),
   

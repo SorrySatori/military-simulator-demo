@@ -23,9 +23,9 @@ const createEntityStyle = (entity: Entity): Style => {
   
   return new Style({
     image: new Icon({
-      img: symbol.asCanvas(),
-      imgSize: [symbol.getSize().width, symbol.getSize().height]
-    })
+      img: symbol.asCanvas() as HTMLCanvasElement,
+      imgSize: [symbol.getSize().width, symbol.getSize().height] as [number, number]
+    } as any)
   })
 }
 
@@ -122,7 +122,16 @@ const MapPanel = () => {
 
     entities.forEach(entity => {
       const feature = vectorSourceRef.current!.getFeatureById(entity.id)
-      if (feature) {
+      const routeFeature = vectorSourceRef.current!.getFeatureById(`route-${entity.id}`)
+      
+      if (entity.status === 'destroyed') {
+        if (feature) {
+          vectorSourceRef.current!.removeFeature(feature)
+        }
+        if (routeFeature) {
+          vectorSourceRef.current!.removeFeature(routeFeature)
+        }
+      } else if (feature) {
         const geometry = feature.getGeometry() as Point
         geometry.setCoordinates(fromLonLat(entity.position))
         feature.set('entity', entity)
