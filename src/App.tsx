@@ -21,8 +21,14 @@ function App() {
   return (
     <div className="app">
       <MenuBar />
+      <div className="content-container">
       <div key="map">
         <MapPanel />
+      </div>
+      <div className="sidebar">
+        <SimulationControl />
+        <EntityInfo />
+      </div>
       </div>
       {/* <div className="main-content">
         <ReactGridLayout
