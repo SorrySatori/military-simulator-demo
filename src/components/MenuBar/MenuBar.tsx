@@ -10,7 +10,7 @@ const MenuBar = () => {
 
   return (
     <div className="menubar">
-      <div className="menubar-title">Military Operations Simulator</div>
+      <div className="menubar-title">Alien Invasion of Ostrava (based on true story)</div>
       
       <div className="menubar-items">
         <div className="menu-item">
