@@ -1,0 +1,15 @@
+.map-panel {
+    background-color: hsl(210, 29%, 29%);
+    color: white;
+    width: 1200px;
+  }
+  
+  .map-content {
+    padding: 0 !important;
+    width: 1200px;
+  }
+  
+  .map-container {
+    width: 1200px;
+    height: 800px;
+  }
