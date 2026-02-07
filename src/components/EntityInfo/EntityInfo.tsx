@@ -3,8 +3,13 @@ import './EntityInfo.css'
 
 const EntityInfo = () => {
   const selectedEntity = useSimulationStore((state) => state.selectedEntity)
+  const entities = useSimulationStore((state) => state.entities)
 
-  if (!selectedEntity) {
+  const currentEntity = selectedEntity 
+    ? entities.find(e => e.id === selectedEntity.id) || selectedEntity
+    : null
+
+  if (!currentEntity) {
     return (
       <div className="panel entity-info-panel">
         <div className="panel-header">Entity Information</div>
@@ -17,7 +22,7 @@ const EntityInfo = () => {
     )
   }
 
-  const isAlien = selectedEntity.faction === 'alien'
+  const isAlien = currentEntity.faction === 'alien'
   const factionColor = isAlien ? '#ff0066' : '#0066ff'
 
   return (
@@ -28,36 +33,36 @@ const EntityInfo = () => {
       <div className="panel-content entity-info-content">
         <div className="entity-header">
           <h3 style={{ color: factionColor }}>
-            {selectedEntity.callSign}
+            {currentEntity.callSign}
           </h3>
-          <span className={`faction-badge ${selectedEntity.faction}`}>
-            {selectedEntity.faction === 'human' ? '🔵 HUMAN' : '🔴 ALIEN'}
+          <span className={`faction-badge ${currentEntity.faction}`}>
+            {currentEntity.faction === 'human' ? '🔵 HUMAN' : '🔴 ALIEN'}
           </span>
         </div>
 
         <div className="entity-details">
           <div className="detail-row">
             <span className="label">Type:</span>
-            <span className="value">{selectedEntity.type}</span>
+            <span className="value">{currentEntity.type}</span>
           </div>
 
           <div className="detail-row">
             <span className="label">Status:</span>
-            <span className={`value status-${selectedEntity.status}`}>
-              {selectedEntity.status.toUpperCase()}
+            <span className={`value status-${currentEntity.status}`}>
+              {currentEntity.status.toUpperCase()}
             </span>
           </div>
 
           <div className="detail-row">
             <span className="label">Task:</span>
-            <span className="value task">{selectedEntity.task}</span>
+            <span className="value task">{currentEntity.task}</span>
           </div>
 
           <div className="detail-section">
             <h4>Combat Stats</h4>
             <div className="detail-row">
               <span className="label">Speed:</span>
-              <span className="value">{selectedEntity.speed} km/h</span>
+              <span className="value">{currentEntity.speed} km/h</span>
             </div>
 
             <div className="detail-row">
@@ -65,9 +70,9 @@ const EntityInfo = () => {
               <div className="progress-bar">
                 <div 
                   className="progress-fill ammo"
-                  style={{ width: `${selectedEntity.ammunition}%` }}
+                  style={{ width: `${currentEntity.ammunition}%` }}
                 />
-                <span className="progress-text">{selectedEntity.ammunition}%</span>
+                <span className="progress-text">{currentEntity.ammunition}%</span>
               </div>
             </div>
 
@@ -76,39 +81,39 @@ const EntityInfo = () => {
               <div className="progress-bar">
                 <div 
                   className="progress-fill damage"
-                  style={{ width: `${selectedEntity.damage}%` }}
+                  style={{ width: `${currentEntity.damage}%` }}
                 />
-                <span className="progress-text">{selectedEntity.damage}%</span>
+                <span className="progress-text">{currentEntity.damage}%</span>
               </div>
             </div>
           </div>
 
-          {isAlien && (selectedEntity.shields !== undefined || selectedEntity.energy !== undefined) && (
+          {isAlien && (currentEntity.shields !== undefined || currentEntity.energy !== undefined) && (
             <div className="detail-section alien-stats">
               <h4>Alien Systems</h4>
               
-              {selectedEntity.shields !== undefined && (
+              {currentEntity.shields !== undefined && (
                 <div className="detail-row">
                   <span className="label">Shields:</span>
                   <div className="progress-bar">
                     <div 
                       className="progress-fill shields"
-                      style={{ width: `${selectedEntity.shields}%` }}
+                      style={{ width: `${currentEntity.shields}%` }}
                     />
-                    <span className="progress-text">{selectedEntity.shields}%</span>
+                    <span className="progress-text">{currentEntity.shields}%</span>
                   </div>
                 </div>
               )}
 
-              {selectedEntity.energy !== undefined && (
+              {currentEntity.energy !== undefined && (
                 <div className="detail-row">
                   <span className="label">Energy:</span>
                   <div className="progress-bar">
                     <div 
                       className="progress-fill energy"
-                      style={{ width: `${selectedEntity.energy}%` }}
+                      style={{ width: `${currentEntity.energy}%` }}
                     />
-                    <span className="progress-text">{selectedEntity.energy}%</span>
+                    <span className="progress-text">{currentEntity.energy}%</span>
                   </div>
                 </div>
               )}
@@ -120,7 +125,7 @@ const EntityInfo = () => {
             <div className="detail-row">
               <span className="label">Coordinates:</span>
               <span className="value coordinates">
-                {selectedEntity.position[1].toFixed(4)}°N, {selectedEntity.position[0].toFixed(4)}°E
+                {currentEntity.position[1].toFixed(4)}°N, {currentEntity.position[0].toFixed(4)}°E
               </span>
             </div>
           </div>

@@ -16,8 +16,8 @@ const SimulationControl = () => {
   
     useEffect(() => {
       const animate = () => {
-        const now = Date.now(   )
-        const deltaTime = (now - lastTickRef.current) / 100
+        const now = Date.now()
+        const deltaTime = (Date.now() - lastTickRef.current) / 1000
         lastTickRef.current = now
   
         if (isRunning) {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Entity } from '../types/entities'
-import { moveEntity } from '../services/Simulationengine'
+import { moveEntity, checkCollision, resolveCombat } from '../services/Simulationengine'
 import { mockEntities } from '../types/entities'
 
 interface SimulationState {
@@ -24,6 +24,10 @@ interface SimulationState {
   updateEntity: (id: string, updates: Partial<Entity>) => void
   tick: (deltaTime: number) => void
   resetEntities: () => void
+  
+  combatLogs: string[]
+  addCombatLog: (log: string) => void
+  clearCombatLogs: () => void
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
@@ -34,7 +38,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   setIsRunning: (running) => set({ isRunning: running }),
   toggleRunning: () => set((state) => ({ isRunning: !state.isRunning })),
   
-  speed: 1,
+  speed: 50,
   setSpeed: (speed) => set({ speed }),
   
   currentTime: 0,
@@ -51,12 +55,49 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   })),
   
   tick: (deltaTime) => set((state) => {
-    const updatedEntities = state.entities.map((entity) => {
+    let updatedEntities = state.entities.map((entity) => {
       if (entity.status === 'destroyed') return entity
       return moveEntity(entity, deltaTime, state.speed)
     })
-    return { entities: updatedEntities }
+    
+    const newCombatLogs: string[] = []
+    const entityMap = new Map(updatedEntities.map(e => [e.id, e]))
+    
+    for (let i = 0; i < updatedEntities.length; i++) {
+      for (let j = i + 1; j < updatedEntities.length; j++) {
+        const entity1 = entityMap.get(updatedEntities[i].id)!
+        const entity2 = entityMap.get(updatedEntities[j].id)!
+        
+        if (entity1.status === 'destroyed' || entity2.status === 'destroyed') {
+          continue
+        }
+        
+        if (checkCollision(entity1, entity2)) {
+          const combatResult = resolveCombat(entity1, entity2)
+          
+          entityMap.set(entity1.id, combatResult.entity1)
+          entityMap.set(entity2.id, combatResult.entity2)
+          
+          if (combatResult.combatLog) {
+            newCombatLogs.push(combatResult.combatLog)
+          }
+        }
+      }
+    }
+    
+    updatedEntities = Array.from(entityMap.values())
+    
+    return { 
+      entities: updatedEntities,
+      combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50)
+    }
   }),
   
-  resetEntities: () => set({ entities: mockEntities })
+  resetEntities: () => set({ entities: mockEntities }),
+  
+  combatLogs: [],
+  addCombatLog: (log) => set((state) => ({
+    combatLogs: [...state.combatLogs, log].slice(-50)
+  })),
+  clearCombatLogs: () => set({ combatLogs: [] })
 }))

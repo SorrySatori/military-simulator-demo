@@ -28,6 +28,7 @@ function App() {
       <div className="sidebar">
         <SimulationControl />
         <EntityInfo />
+        <DataLog />
       </div>
       </div>
       {/* <div className="main-content">

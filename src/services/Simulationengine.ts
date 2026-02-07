@@ -102,7 +102,7 @@ export function hasReachedDestination(entity: Entity): boolean {
 export function checkCollision(entity1: Entity, entity2: Entity): boolean {
   const distance = getDistance(entity1.position, entity2.position)
   
-  const collisionDistance = 0.001
+  const collisionDistance = 0.005
   
   return distance < collisionDistance
 }
@@ -116,26 +116,46 @@ export function resolveCombat(entity1: Entity, entity2: Entity): {
     return { entity1, entity2, combatLog: null }
   }
 
-  const entity1DamageDealt = Math.min(10, entity1.ammunition / 10)
-  const entity2DamageDealt = Math.min(10, entity2.ammunition / 10)
+  const entity1DamageDealt = entity1.ammunition > 0 
+    ? Math.min(15, Math.max(3, entity1.ammunition / 10))
+    : 0
+  const entity2DamageDealt = entity2.ammunition > 0
+    ? Math.min(15, Math.max(3, entity2.ammunition / 10))
+    : 0
 
   let updated1 = { ...entity1 }
   let updated2 = { ...entity2 }
 
-  if (updated2.shields !== undefined && updated2.shields > 0) {
-    updated2.shields = Math.max(0, updated2.shields - entity1DamageDealt)
-  } else {
-    updated2.damage = Math.min(100, updated2.damage + entity1DamageDealt)
+  if (entity1DamageDealt > 0) {
+    if (updated2.shields !== undefined && updated2.shields > 0) {
+      updated2.shields = Math.max(0, updated2.shields - entity1DamageDealt)
+      if (updated2.shields === 0) {
+        const overflow = entity1DamageDealt - (entity2.shields || 0)
+        if (overflow > 0) {
+          updated2.damage = Math.min(100, updated2.damage + overflow)
+        }
+      }
+    } else {
+      updated2.damage = Math.min(100, updated2.damage + entity1DamageDealt)
+    }
   }
 
-  if (updated1.shields !== undefined && updated1.shields > 0) {
-    updated1.shields = Math.max(0, updated1.shields - entity2DamageDealt)
-  } else {
-    updated1.damage = Math.min(100, updated1.damage + entity2DamageDealt)
+  if (entity2DamageDealt > 0) {
+    if (updated1.shields !== undefined && updated1.shields > 0) {
+      updated1.shields = Math.max(0, updated1.shields - entity2DamageDealt)
+      if (updated1.shields === 0) {
+        const overflow = entity2DamageDealt - (entity1.shields || 0)
+        if (overflow > 0) {
+          updated1.damage = Math.min(100, updated1.damage + overflow)
+        }
+      }
+    } else {
+      updated1.damage = Math.min(100, updated1.damage + entity2DamageDealt)
+    }
   }
 
-  updated1.ammunition = Math.max(0, updated1.ammunition - 5)
-  updated2.ammunition = Math.max(0, updated2.ammunition - 5)
+  updated1.ammunition = Math.max(0, updated1.ammunition - 2)
+  updated2.ammunition = Math.max(0, updated2.ammunition - 2)
 
   if (updated1.damage >= 100) {
     updated1.status = 'destroyed'
