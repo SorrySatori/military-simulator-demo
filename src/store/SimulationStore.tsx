@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import type { Entity } from '../types/entities'
+import { moveEntity } from '../services/Simulationengine'
+import { mockEntities } from '../types/entities'
 
 interface SimulationState {
   selectedEntity: Entity | null
@@ -20,6 +22,8 @@ interface SimulationState {
   entities: Entity[]
   setEntities: (entities: Entity[]) => void
   updateEntity: (id: string, updates: Partial<Entity>) => void
+  tick: (deltaTime: number) => void
+  resetEntities: () => void
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
@@ -38,11 +42,21 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   incrementTime: () => set((state) => ({ currentTime: state.currentTime + 1 })),
   resetTime: () => set({ currentTime: 0 }),
   
-  entities: [],
+  entities: mockEntities,
   setEntities: (entities) => set({ entities }),
   updateEntity: (id, updates) => set((state) => ({
     entities: state.entities.map((entity) =>
       entity.id === id ? { ...entity, ...updates } : entity
     )
-  }))
+  })),
+  
+  tick: (deltaTime) => set((state) => {
+    const updatedEntities = state.entities.map((entity) => {
+      if (entity.status === 'destroyed') return entity
+      return moveEntity(entity, deltaTime, state.speed)
+    })
+    return { entities: updatedEntities }
+  }),
+  
+  resetEntities: () => set({ entities: mockEntities })
 }))
