@@ -9,77 +9,141 @@ export function moveEntity(
     return entity
   }
 
-  const speedKmPerSec = (entity.speed * speedMultiplier) / 3600
-  const distanceDegrees = speedKmPerSec / 111
-  let remainingDistance = distanceDegrees * deltaTime
+  const totalDistanceToTravel = calculateDistancePerFrame(
+    entity.speed, 
+    speedMultiplier, 
+    deltaTime
+  )
 
-  let currentPos = [...entity.position] as [number, number]
-  let currentSegmentIndex = findCurrentSegment(currentPos, entity.route)
+  const newPosition = moveAlongRoute(
+    entity.position,
+    entity.route,
+    totalDistanceToTravel
+  )
 
-  let iterations = 0
-  const maxIterations = 100 // Safety limit
+  return { ...entity, position: newPosition }
+}
 
-  while (remainingDistance > 0.00001 && iterations < maxIterations) {
-    iterations++
+function calculateDistancePerFrame(
+  speedKmPerHour: number,
+  speedMultiplier: number,
+  deltaTimeSeconds: number
+): number {
+  const speedKmPerSecond = (speedKmPerHour * speedMultiplier) / 3600
+  
+  const speedDegreesPerSecond = speedKmPerSecond / 111
+  
+  const distanceInDegrees = speedDegreesPerSecond * deltaTimeSeconds
+  
+  return distanceInDegrees
+}
 
-    const segmentEnd = entity.route[currentSegmentIndex + 1]
+function moveAlongRoute(
+  startPosition: [number, number],
+  route: [number, number][],
+  distanceBudget: number
+): [number, number] {
+  let currentPosition = [...startPosition] as [number, number]
+  let remainingDistance = distanceBudget
+  let currentSegmentIndex = findWhichSegmentPositionIsOn(currentPosition, route)
 
-    if (!segmentEnd) {
-      currentPos = entity.route[entity.route.length - 1]
+  const MINIMUM_DISTANCE = 0.00001
+  
+  while (remainingDistance > MINIMUM_DISTANCE) {
+    const nextWaypoint = route[currentSegmentIndex + 1]
+    
+    if (!nextWaypoint) {
+      currentPosition = route[route.length - 1]
       break
     }
 
-    const dx = segmentEnd[0] - currentPos[0]
-    const dy = segmentEnd[1] - currentPos[1]
-    const distanceToEnd = Math.sqrt(dx * dx + dy * dy)
+    const moveResult = moveTowardWaypoint(
+      currentPosition,
+      nextWaypoint,
+      remainingDistance
+    )
 
-    if (remainingDistance >= distanceToEnd) {
-      currentPos = [...segmentEnd] as [number, number]
-      remainingDistance -= distanceToEnd
+    currentPosition = moveResult.newPosition
+    remainingDistance = moveResult.remainingDistance
+
+    if (moveResult.reachedWaypoint) {
       currentSegmentIndex++
-
-      if (currentSegmentIndex >= entity.route.length - 1) {
+      
+      if (currentSegmentIndex >= route.length - 1) {
         break
       }
     } else {
-      const ratio = remainingDistance / distanceToEnd
-      currentPos = [
-        currentPos[0] + dx * ratio,
-        currentPos[1] + dy * ratio
-      ]
-      remainingDistance = 0
+      break
     }
   }
 
-  return { ...entity, position: currentPos }
+  return currentPosition
 }
 
-function findCurrentSegment(currentPos: [number, number], route: [number, number][]): number {
-  let closestSegment = 0
-  let minDistance = Infinity
+function moveTowardWaypoint(
+  currentPosition: [number, number],
+  targetWaypoint: [number, number],
+  distanceBudget: number
+): {
+  newPosition: [number, number]
+  remainingDistance: number
+  reachedWaypoint: boolean
+} {
+  const deltaX = targetWaypoint[0] - currentPosition[0]
+  const deltaY = targetWaypoint[1] - currentPosition[1]
+  const distanceToTarget = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+  if (distanceBudget >= distanceToTarget) {
+    return {
+      newPosition: [...targetWaypoint] as [number, number],
+      remainingDistance: distanceBudget - distanceToTarget,
+      reachedWaypoint: true
+    }
+  }
+
+  const travelRatio = distanceBudget / distanceToTarget
+  const newPosition: [number, number] = [
+    currentPosition[0] + deltaX * travelRatio,
+    currentPosition[1] + deltaY * travelRatio
+  ]
+
+  return {
+    newPosition,
+    remainingDistance: 0,
+    reachedWaypoint: false
+  }
+}
+
+function findWhichSegmentPositionIsOn(
+  position: [number, number],
+  route: [number, number][]
+): number {
+  let closestSegmentIndex = 0
+  let minimumDistanceFound = Infinity
 
   for (let i = 0; i < route.length - 1; i++) {
     const segmentStart = route[i]
     const segmentEnd = route[i + 1]
-    
-    const distToStart = getDistance(currentPos, segmentStart)
-    const distToEnd = getDistance(currentPos, segmentEnd)
+
+    const distanceToStart = getDistance(position, segmentStart)
+    const distanceToEnd = getDistance(position, segmentEnd)
     const segmentLength = getDistance(segmentStart, segmentEnd)
     
-    const totalDist = distToStart + distToEnd
-    const diff = Math.abs(totalDist - segmentLength)
+    const sumOfDistances = distanceToStart + distanceToEnd
+    const differenceFromSegmentLength = Math.abs(sumOfDistances - segmentLength)
     
-    if (diff < 0.001) {
+    const TOLERANCE = 0.001
+    if (differenceFromSegmentLength < TOLERANCE) {
       return i
     }
 
-    if (distToStart < minDistance) {
-      minDistance = distToStart
-      closestSegment = i
+    if (distanceToStart < minimumDistanceFound) {
+      minimumDistanceFound = distanceToStart
+      closestSegmentIndex = i
     }
   }
 
-  return closestSegment
+  return closestSegmentIndex
 }
 
 function getDistance(pos1: [number, number], pos2: [number, number]): number {
@@ -101,9 +165,14 @@ export function hasReachedDestination(entity: Entity): boolean {
 
 export function checkCollision(entity1: Entity, entity2: Entity): boolean {
   const distance = getDistance(entity1.position, entity2.position)
+
+  const baseDistance = 0.005
+  const rangeBonus = 0.002
   
-  const collisionDistance = 0.005
-  return distance < collisionDistance
+  const maxRange = Math.max(entity1.range || 0, entity2.range || 0)
+  const combatDistance = baseDistance + (maxRange * rangeBonus)
+  
+  return distance < combatDistance
 }
 
 export function resolveCombat(entity1: Entity, entity2: Entity): {
@@ -115,40 +184,62 @@ export function resolveCombat(entity1: Entity, entity2: Entity): {
     return { entity1, entity2, combatLog: null }
   }
 
-  const entity1DamageDealt = entity1.ammunition > 0 
+  const distance = getDistance(entity1.position, entity2.position)
+  const baseRange = 0.005
+  const rangeIncrement = 0.002
+  
+  const entity1Range = baseRange + ((entity1.range || 0) * rangeIncrement)
+  const entity2Range = baseRange + ((entity2.range || 0) * rangeIncrement)
+  
+  const entity1CanHit = distance <= entity1Range
+  const entity2CanHit = distance <= entity2Range
+  
+  const entity1DamageDealt = (entity1CanHit && entity1.ammunition > 0)
     ? Math.max(3, entity1.ammunition / 10)
     : 0
-  const entity2DamageDealt = entity2.ammunition > 0
+  const entity2DamageDealt = (entity2CanHit && entity2.ammunition > 0)
     ? Math.max(3, entity2.ammunition / 10)
     : 0
 
-  let updatedEntity1 = { ...entity1 }
-  let updatedEntity2 = { ...entity2 }
+  let updated1 = { ...entity1 }
+  let updated2 = { ...entity2 }
 
   if (entity1DamageDealt > 0) {
-    updatedEntity2.damage = Math.min(100, updatedEntity2.damage + entity1DamageDealt)
+
+    updated2.damage = Math.min(100, updated2.damage + entity1DamageDealt)
   }
 
   if (entity2DamageDealt > 0) {
-    updatedEntity1.damage = Math.min(100, updatedEntity1.damage + entity2DamageDealt)
+      updated1.damage = Math.min(100, updated1.damage + entity2DamageDealt)
   }
 
-  updatedEntity1.ammunition = Math.max(0, updatedEntity1.ammunition - 2)
-  updatedEntity2.ammunition = Math.max(0, updatedEntity2.ammunition - 2)
-
-  if (updatedEntity1.damage >= 100) {
-    updatedEntity1.status = 'destroyed'
-  } else if (updatedEntity1.damage >= 50) {
-    updatedEntity1.status = 'damaged'
+  if (entity1CanHit && entity1.ammunition > 0) {
+    updated1.ammunition = Math.max(0, updated1.ammunition - 5)
+  }
+  if (entity2CanHit && entity2.ammunition > 0) {
+    updated2.ammunition = Math.max(0, updated2.ammunition - 5)
   }
 
-  if (updatedEntity2.damage >= 100) {
-    updatedEntity2.status = 'destroyed'
-  } else if (updatedEntity2.damage >= 50) {
-    updatedEntity2.status = 'damaged'
+  if (updated1.damage >= 100) {
+    updated1.status = 'destroyed'
+  } else if (updated1.damage >= 50) {
+    updated1.status = 'damaged'
   }
 
-  const combatLog = `${entity1.callSign} engaged ${entity2.callSign}! Damage dealt: ${entity1DamageDealt.toFixed(1)} / ${entity2DamageDealt.toFixed(1)}`
+  if (updated2.damage >= 100) {
+    updated2.status = 'destroyed'
+  } else if (updated2.damage >= 50) {
+    updated2.status = 'damaged'
+  }
 
-  return { entity1: updatedEntity1, entity2: updatedEntity2, combatLog }
+  let combatLog = ''
+  if (entity1CanHit && entity2CanHit) {
+    combatLog = `${entity1.callSign} ⚔️ ${entity2.callSign} - Damage: ${entity1DamageDealt.toFixed(1)} / ${entity2DamageDealt.toFixed(1)}`
+  } else if (entity1CanHit && !entity2CanHit) {
+    combatLog = `${entity1.callSign} 🎯 ${entity2.callSign} (OUT OF RANGE) - Damage: ${entity1DamageDealt.toFixed(1)} / 0`
+  } else if (!entity1CanHit && entity2CanHit) {
+    combatLog = `${entity2.callSign} 🎯 ${entity1.callSign} (OUT OF RANGE) - Damage: ${entity2DamageDealt.toFixed(1)} / 0`
+  }
+
+  return { entity1: updated1, entity2: updated2, combatLog }
 }
