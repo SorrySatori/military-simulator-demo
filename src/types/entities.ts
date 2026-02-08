@@ -8,6 +8,7 @@ export interface Entity {
     task: string
     speed: number
     damage: number
+    range: number
     ammunition: number
     natoCode: string
     faction: 'human' | 'alien'
@@ -46,6 +47,7 @@ export interface Entity {
       speed: 5,
       damage: 0,
       ammunition: 100,
+      range: 1,
       natoCode: 'SFG-UCI----D',
       faction: 'human',
       status: 'active'
@@ -81,6 +83,7 @@ export interface Entity {
       speed: 5,
       damage: 15,
       ammunition: 85,
+      range: 1,
       natoCode: 'SFG-UCI----D',
       faction: 'human',
       status: 'active'
@@ -115,6 +118,7 @@ export interface Entity {
       speed: 20,
       damage: 10,
       ammunition: 80,
+      range: 2,
       natoCode: 'SFG-UCAT---D',
       faction: 'human',
       status: 'active'
@@ -149,7 +153,8 @@ export interface Entity {
       task: 'Advance north - Flank security',
       speed: 18,
       damage: 25,
-      ammunition: 60,
+      ammunition: 80,
+      range: 2,
       natoCode: 'SFG-UCAT---D',
       faction: 'human',
       status: 'damaged'
@@ -170,7 +175,8 @@ export interface Entity {
       task: 'Fire support - Priority targets',
       speed: 12,
       damage: 5,
-      ammunition: 60,
+      ammunition: 70,
+      range: 3,
       natoCode: 'SFG-UCFH---D',
       faction: 'human',
       status: 'active'
@@ -190,7 +196,8 @@ export interface Entity {
       task: 'Area denial',
       speed: 14,
       damage: 0,
-      ammunition: 45,
+      ammunition: 65,
+      range: 3,
       natoCode: 'SFG-UCFR---D',
       faction: 'human',
       status: 'active'
@@ -212,6 +219,7 @@ export interface Entity {
       speed: 16,
       damage: 0,
       ammunition: 90,
+      range: 3,
       natoCode: 'SFG-UCAD---D',
       faction: 'human',
       status: 'active'
@@ -233,6 +241,7 @@ export interface Entity {
       speed: 10,
       damage: 0,
       ammunition: 0,
+      range: 0,
       natoCode: 'SFG-UH-----D',
       faction: 'human',
       status: 'active'
@@ -273,7 +282,8 @@ export interface Entity {
       task: 'Scout south - Locate human forces',
       speed: 30,
       damage: 0,
-      ammunition: 50,
+      ammunition: 70,
+      range: 1,
       natoCode: 'SHG-UCI----H',
       faction: 'alien',
       status: 'active',
@@ -308,7 +318,8 @@ export interface Entity {
       task: 'Attack south - Electronic warfare',
       speed: 28,
       damage: 10,
-      ammunition: 45,
+      ammunition: 65,
+      range: 1,
       natoCode: 'SHG-UCIW---H',
       faction: 'alien',
       status: 'active',
@@ -342,7 +353,8 @@ export interface Entity {
       task: 'Attack south - Destroy human armor',
       speed: 22,
       damage: 20,
-      ammunition: 75,
+      ammunition: 85,
+      range: 2,
       natoCode: 'SHG-UCAT---H',
       faction: 'alien',
       status: 'damaged',
@@ -378,6 +390,7 @@ export interface Entity {
       speed: 24,
       damage: 0,
       ammunition: 90,
+      range: 3,
       natoCode: 'SHG-UCAW---H',
       faction: 'alien',
       status: 'active',
@@ -398,7 +411,8 @@ export interface Entity {
       task: 'Area bombardment',
       speed: 16,
       damage: 15,
-      ammunition: 85,
+      ammunition: 95,
+      range: 3,
       natoCode: 'SHG-UCFH---H',
       faction: 'alien',
       status: 'active',
@@ -418,7 +432,8 @@ export interface Entity {
       task: 'Breach defensive lines',
       speed: 14,
       damage: 30,
-      ammunition: 70,
+      ammunition: 80,
+      range: 3,
       natoCode: 'SHG-UCFR---H',
       faction: 'alien',
       status: 'damaged',
@@ -440,6 +455,7 @@ export interface Entity {
       speed: 10,
       damage: 0,
       ammunition: 0,
+      range: 0,
       natoCode: 'SHG-UCS----H',
       faction: 'alien',
       status: 'active',
@@ -462,6 +478,7 @@ export interface Entity {
       speed: 40,
       damage: 5,
       ammunition: 95,
+      range: 3,
       natoCode: 'SHA-MFF----H',
       faction: 'alien',
       status: 'active',
@@ -483,6 +500,7 @@ export interface Entity {
       speed: 35,
       damage: 0,
       ammunition: 100,
+      range: 3,
       natoCode: 'SHA-MFB----H',
       faction: 'alien',
       status: 'active',
@@ -504,6 +522,7 @@ export interface Entity {
       speed: 8,
       damage: 0,
       ammunition: 0,
+      range: 0,
       natoCode: 'SHG-UH-----H',
       faction: 'alien',
       status: 'active',
