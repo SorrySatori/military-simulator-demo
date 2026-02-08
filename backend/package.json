@@ -1,0 +1,26 @@
+{
+  "name": "military-simulator-backend",
+  "version": "1.0.0",
+  "description": "WebSocket backend for military simulator",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.ts",
+    "dev": "tsx watch server.ts"
+  },
+  "keywords": [
+    "websocket",
+    "simulation",
+    "military"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.2",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2"
+  }
+}

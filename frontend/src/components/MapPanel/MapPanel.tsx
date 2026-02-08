@@ -84,7 +84,7 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
 
       if (unit.route && unit.route.length > 1) {
         const routeFeature = new Feature({
-          geometry: new LineString(unit.route.map(coord => fromLonLat(coord)))
+          geometry: new LineString(unit.route.map((coord: [number, number]) => fromLonLat(coord)))
         })
         
         routeFeature.setId(`route-${unit.id}`)
@@ -159,8 +159,8 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
     if (!vectorSourceRef.current) return
 
     units.forEach(unit => {
-      const feature = vectorSourceRef.current!.getFeatureById(unit.id)
-      const routeFeature = vectorSourceRef.current!.getFeatureById(`route-${unit.id}`)
+      let feature = vectorSourceRef.current!.getFeatureById(unit.id)
+      let routeFeature = vectorSourceRef.current!.getFeatureById(`route-${unit.id}`)
       
       if (unit.status === 'destroyed') {
         if (feature) {
@@ -170,10 +170,30 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
           vectorSourceRef.current!.removeFeature(routeFeature)
         }
       } else if (feature) {
+        // Update existing feature
         const geometry = feature.getGeometry() as Point
         geometry.setCoordinates(fromLonLat(unit.position))
         feature.set('unit', unit)
         feature.setStyle(createUnitStyle(unit))
+      } else {
+        // Create new feature if it doesn't exist
+        feature = new Feature({
+          geometry: new Point(fromLonLat(unit.position)),
+          unit: unit
+        })
+        feature.setId(unit.id)
+        feature.setStyle(createUnitStyle(unit))
+        vectorSourceRef.current!.addFeature(feature)
+
+        // Create route feature if unit has a route
+        if (unit.route && unit.route.length > 1) {
+          routeFeature = new Feature({
+            geometry: new LineString(unit.route.map((coord: [number, number]) => fromLonLat(coord)))
+          })
+          routeFeature.setId(`route-${unit.id}`)
+          routeFeature.setStyle(createRouteStyle(unit))
+          vectorSourceRef.current!.addFeature(routeFeature)
+        }
       }
     })
   }, [units])

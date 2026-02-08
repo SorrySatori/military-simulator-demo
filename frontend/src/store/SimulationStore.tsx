@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { Unit } from '../types/units'
 import { moveUnit, checkCollision, resolveCombat, hasReachedDestination } from '../services/SimulationEngine'
-import { mockunits } from '../types/units'
+import { wsService } from '../services/WebSocketService'
 
 interface SimulationState {
   selectedUnit: Unit | null
@@ -52,7 +52,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   incrementTime: () => set((state) => ({ currentTime: state.currentTime + 1 })),
   resetTime: () => set({ currentTime: 0 }),
   
-  units: mockunits,
+  units: [],
   setunits: (units) => set({ units }),
   updateUnit: (id, updates) => set((state) => ({
     units: state.units.map((unit) =>
@@ -105,7 +105,10 @@ export const useSimulationStore = create<SimulationState>((set) => ({
     }
   }),
   
-  resetunits: () => set({ units: mockunits, simulationEnded: false, combatLogs: [], currentTime: 0 }),
+  resetunits: () => {
+    wsService.send('reset_units')
+    set({ simulationEnded: false, combatLogs: [], currentTime: 0 })
+  },
   
   combatLogs: [],
   addCombatLog: (log) => set((state) => ({

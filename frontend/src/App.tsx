@@ -4,11 +4,13 @@ import MapPanel from './components/MapPanel/MapPanel'
 import SimulationControl from './components/SimulationControl/SimulationControl'
 import UnitInfo from './components/UnitInfo/UnitInfo'
 import DataLog from './components/DataLog/DataLog'
+import Loading from './components/Loading/Loading'
 import './components/Panel.css'
 import './App.css'
 import ModalAboutInfo from './components/Modal/ModalAboutInfo'
 import ModalSimulationEnd from './components/Modal/ModalSimulationEnd'
 import { useSimulationStore } from './store/SimulationStore'
+import { wsService } from './services/WebSocketService'
 
 type PanelType = 'controls' | 'unit' | 'log'
 
@@ -19,11 +21,56 @@ function App() {
   const [showAboutModal, setShowAboutModal] = useState(false)
   const [measurementMode, setMeasurementMode] = useState(false)
   const [showEndModal, setShowEndModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [loadingError, setLoadingError] = useState<string | null>(null)
   
   const simulationEnded = useSimulationStore((state) => state.simulationEnded)
   const units = useSimulationStore((state) => state.units)
   const resetunits = useSimulationStore((state) => state.resetunits)
   const setSimulationEnded = useSimulationStore((state) => state.setSimulationEnded)
+  const setunits = useSimulationStore((state) => state.setunits)
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      let connectionTimeout: number | null = null
+      let unitsReceived = false
+
+      try {
+        setLoadingProgress(20)
+        await wsService.connect()
+        setLoadingProgress(50)
+
+        wsService.on('units_data', (message) => {
+          unitsReceived = true
+          if (connectionTimeout) clearTimeout(connectionTimeout)
+          setunits(message.data)
+          setLoadingProgress(100)
+          setTimeout(() => setIsLoading(false), 500)
+        })
+
+        wsService.on('connection', () => {
+          setLoadingProgress(70)
+        })
+
+        connectionTimeout = setTimeout(() => {
+          if (!unitsReceived) {
+            console.error('Connection timeout - no units received from backend')
+            setLoadingError('Connection timeout. Make sure the backend is running on ws://localhost:8080')
+            setTimeout(() => setIsLoading(false), 2000)
+          }
+        }, 5000)
+      } catch (error) {
+        console.error('Failed to connect to WebSocket:', error)
+      }
+    }
+
+    initializeApp()
+
+    return () => {
+      wsService.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
     if (simulationEnded && !showEndModal) {
@@ -114,6 +161,15 @@ function App() {
         </div>
         {panelComponents[panelType]}
       </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <Loading 
+        message={loadingError || "Connecting to server..."} 
+        progress={loadingError ? undefined : loadingProgress} 
+      />
     )
   }
 
