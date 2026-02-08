@@ -32,7 +32,6 @@ class WebSocketService {
         }
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error)
           reject(error)
         }
 
@@ -40,6 +39,7 @@ class WebSocketService {
           this.attemptReconnect()
         }
       } catch (error) {
+        console.error('WebSocket error:', error)
         reject(error)
       }
     })

@@ -60,7 +60,6 @@ function App() {
           }
         }, 5000)
       } catch (error) {
-        console.error('Failed to connect to WebSocket:', error)
       }
     }
 
