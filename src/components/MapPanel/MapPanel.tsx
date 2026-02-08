@@ -10,14 +10,14 @@ import Point from 'ol/geom/Point'
 import LineString from 'ol/geom/LineString'
 import { fromLonLat } from 'ol/proj'
 import { Style, Icon, Stroke } from 'ol/style'
-import type { Entity } from '../../types/entities'
+import type { Unit } from '../../types/units'
 import { useSimulationStore } from '../../store/SimulationStore'
 import ms from 'milsymbol'
 import 'ol/ol.css'
 import './MapPanel.css'
 
-const createEntityStyle = (entity: Entity): Style => {
-  const symbol = new ms.Symbol(entity.natoCode, {
+const createUnitStyle = (unit: Unit): Style => {
+  const symbol = new ms.Symbol(unit.natoCode, {
     size: 30
   })
   
@@ -29,12 +29,12 @@ const createEntityStyle = (entity: Entity): Style => {
   })
 }
 
-const createRouteStyle = (entity: Entity): Style => {
-  const isDamaged = entity.status === 'damaged'
+const createRouteStyle = (unit: Unit): Style => {
+  const isDamaged = unit.status === 'damaged'
   
   return new Style({
     stroke: new Stroke({
-      color: entity.faction === 'human' 
+      color: unit.faction === 'human' 
         ? 'rgba(0, 100, 255, 0.6)'
         : 'rgba(255, 0, 0, 0.6)',
       width: isDamaged ? 1.5 : 2,
@@ -52,9 +52,9 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<Map | null>(null)
   const vectorSourceRef = useRef<VectorSource | null>(null)
-  const setSelectedEntity = useSimulationStore((state) => state.setSelectedEntity)
-  const entities = useSimulationStore((state) => state.entities)
-  const [selectedUnits, setSelectedUnits] = useState<Entity[]>([])
+  const setSelectedUnit = useSimulationStore((state) => state.setSelectedUnit)
+  const units = useSimulationStore((state) => state.units)
+  const [selectedUnits, setSelectedUnits] = useState<Unit[]>([])
   const [distance, setDistance] = useState<number | null>(null)
 
   const calculateDistance = (pos1: [number, number], pos2: [number, number]): number => {
@@ -72,23 +72,23 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
     const vectorSource = new VectorSource()
     vectorSourceRef.current = vectorSource
 
-    entities.forEach(entity => {
+    units.forEach(unit => {
       const feature = new Feature({
-        geometry: new Point(fromLonLat(entity.position)),
-        entity: entity
+        geometry: new Point(fromLonLat(unit.position)),
+        unit: unit
       })
       
-      feature.setId(entity.id)
-      feature.setStyle(createEntityStyle(entity))
+      feature.setId(unit.id)
+      feature.setStyle(createUnitStyle(unit))
       vectorSource.addFeature(feature)
 
-      if (entity.route && entity.route.length > 1) {
+      if (unit.route && unit.route.length > 1) {
         const routeFeature = new Feature({
-          geometry: new LineString(entity.route.map(coord => fromLonLat(coord)))
+          geometry: new LineString(unit.route.map(coord => fromLonLat(coord)))
         })
         
-        routeFeature.setId(`route-${entity.id}`)
-        routeFeature.setStyle(createRouteStyle(entity))
+        routeFeature.setId(`route-${unit.id}`)
+        routeFeature.setStyle(createRouteStyle(unit))
         vectorSource.addFeature(routeFeature)
       }
     })
@@ -113,23 +113,23 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
 
     map.on('click', (evt) => {
       map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        const entity = feature.get('entity')
-        if (entity) {
+        const unit = feature.get('unit')
+        if (unit) {
           if (measurementMode) {
             setSelectedUnits(prev => {
               if (prev.length === 0) {
-                return [entity]
+                return [unit]
               } else if (prev.length === 1) {
-                const dist = calculateDistance(prev[0].position, entity.position)
+                const dist = calculateDistance(prev[0].position, unit.position)
                 setDistance(dist)
-                return [prev[0], entity]
+                return [prev[0], unit]
               } else {
                 setDistance(null)
-                return [entity]
+                return [unit]
               }
             })
           } else {
-            setSelectedEntity(entity)
+            setSelectedUnit(unit)
           }
         }
       })
@@ -146,7 +146,7 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
     return () => {
       map.setTarget(undefined)
     }
-  }, [setSelectedEntity, measurementMode])
+  }, [setSelectedUnit, measurementMode])
 
   useEffect(() => {
     if (!measurementMode) {
@@ -158,11 +158,11 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
   useEffect(() => {
     if (!vectorSourceRef.current) return
 
-    entities.forEach(entity => {
-      const feature = vectorSourceRef.current!.getFeatureById(entity.id)
-      const routeFeature = vectorSourceRef.current!.getFeatureById(`route-${entity.id}`)
+    units.forEach(unit => {
+      const feature = vectorSourceRef.current!.getFeatureById(unit.id)
+      const routeFeature = vectorSourceRef.current!.getFeatureById(`route-${unit.id}`)
       
-      if (entity.status === 'destroyed') {
+      if (unit.status === 'destroyed') {
         if (feature) {
           vectorSourceRef.current!.removeFeature(feature)
         }
@@ -171,12 +171,12 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
         }
       } else if (feature) {
         const geometry = feature.getGeometry() as Point
-        geometry.setCoordinates(fromLonLat(entity.position))
-        feature.set('entity', entity)
-        feature.setStyle(createEntityStyle(entity))
+        geometry.setCoordinates(fromLonLat(unit.position))
+        feature.set('unit', unit)
+        feature.setStyle(createUnitStyle(unit))
       }
     })
-  }, [entities])
+  }, [units])
 
   return (
     <div className="panel map-panel">

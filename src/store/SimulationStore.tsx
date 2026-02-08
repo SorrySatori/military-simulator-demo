@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import type { Entity } from '../types/entities'
-import { moveEntity, checkCollision, resolveCombat, hasReachedDestination } from '../services/SimulationEngine'
-import { mockEntities } from '../types/entities'
+import type { Unit } from '../types/units'
+import { moveUnit, checkCollision, resolveCombat, hasReachedDestination } from '../services/SimulationEngine'
+import { mockunits } from '../types/units'
 
 interface SimulationState {
-  selectedEntity: Entity | null
-  setSelectedEntity: (entity: Entity | null) => void
+  selectedUnit: Unit | null
+  setSelectedUnit: (unit: Unit | null) => void
   
   isRunning: boolean
   setIsRunning: (running: boolean) => void
@@ -19,11 +19,11 @@ interface SimulationState {
   incrementTime: () => void
   resetTime: () => void
   
-  entities: Entity[]
-  setEntities: (entities: Entity[]) => void
-  updateEntity: (id: string, updates: Partial<Entity>) => void
+  units: Unit[]
+  setunits: (units: Unit[]) => void
+  updateUnit: (id: string, updates: Partial<Unit>) => void
   tick: (deltaTime: number) => void
-  resetEntities: () => void
+  resetunits: () => void
   
   combatLogs: string[]
   addCombatLog: (log: string) => void
@@ -31,8 +31,8 @@ interface SimulationState {
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
-  selectedEntity: null,
-  setSelectedEntity: (entity) => set({ selectedEntity: entity }),
+  selectedUnit: null,
+  setSelectedUnit: (unit) => set({ selectedUnit: unit }),
   
   isRunning: false,
   setIsRunning: (running) => set({ isRunning: running }),
@@ -46,37 +46,37 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   incrementTime: () => set((state) => ({ currentTime: state.currentTime + 1 })),
   resetTime: () => set({ currentTime: 0 }),
   
-  entities: mockEntities,
-  setEntities: (entities) => set({ entities }),
-  updateEntity: (id, updates) => set((state) => ({
-    entities: state.entities.map((entity) =>
-      entity.id === id ? { ...entity, ...updates } : entity
+  units: mockunits,
+  setunits: (units) => set({ units }),
+  updateUnit: (id, updates) => set((state) => ({
+    units: state.units.map((unit) =>
+      unit.id === id ? { ...unit, ...updates } : unit
     )
   })),
   
   tick: (deltaTime) => set((state) => {
-    let updatedEntities = state.entities.map((entity) => {
-      if (entity.status === 'destroyed') return entity
-      return moveEntity(entity, deltaTime, state.speed)
+    let updatedunits = state.units.map((unit) => {
+      if (unit.status === 'destroyed') return unit
+      return moveUnit(unit, deltaTime, state.speed)
     })
     
     const newCombatLogs: string[] = []
-    const entityMap = new Map(updatedEntities.map(e => [e.id, e]))
+    const unitMap = new Map(updatedunits.map(e => [e.id, e]))
     
-    for (let i = 0; i < updatedEntities.length; i++) {
-      for (let j = i + 1; j < updatedEntities.length; j++) {
-        const entity1 = entityMap.get(updatedEntities[i].id)!
-        const entity2 = entityMap.get(updatedEntities[j].id)!
+    for (let i = 0; i < updatedunits.length; i++) {
+      for (let j = i + 1; j < updatedunits.length; j++) {
+        const unit1 = unitMap.get(updatedunits[i].id)!
+        const unit2 = unitMap.get(updatedunits[j].id)!
         
-        if (entity1.status === 'destroyed' || entity2.status === 'destroyed') {
+        if (unit1.status === 'destroyed' || unit2.status === 'destroyed') {
           continue
         }
         
-        if (checkCollision(entity1, entity2)) {
-          const combatResult = resolveCombat(entity1, entity2)
+        if (checkCollision(unit1, unit2)) {
+          const combatResult = resolveCombat(unit1, unit2)
           
-          entityMap.set(entity1.id, combatResult.entity1)
-          entityMap.set(entity2.id, combatResult.entity2)
+          unitMap.set(unit1.id, combatResult.unit1)
+          unitMap.set(unit2.id, combatResult.unit2)
           
           if (combatResult.combatLog) {
             newCombatLogs.push(combatResult.combatLog)
@@ -85,20 +85,20 @@ export const useSimulationStore = create<SimulationState>((set) => ({
       }
     }
     
-    updatedEntities = Array.from(entityMap.values())
+    updatedunits = Array.from(unitMap.values())
     
-    const allFinished = updatedEntities.every(entity => 
-      entity.status === 'destroyed' || hasReachedDestination(entity)
+    const allFinished = updatedunits.every(unit => 
+      unit.status === 'destroyed' || hasReachedDestination(unit)
     )
     
     return { 
-      entities: updatedEntities,
+      units: updatedunits,
       combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50),
       isRunning: allFinished ? false : state.isRunning
     }
   }),
   
-  resetEntities: () => set({ entities: mockEntities }),
+  resetunits: () => set({ units: mockunits }),
   
   combatLogs: [],
   addCombatLog: (log) => set((state) => ({

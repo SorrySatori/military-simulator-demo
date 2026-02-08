@@ -1,29 +1,29 @@
-import type { Entity } from '../types/entities'
+import type { Unit } from '../types/units'
 
-export function moveEntity(
-  entity: Entity,
+export function moveUnit(
+  unit: Unit,
   deltaTime: number,
   speedMultiplier: number
-): Entity {
-  if (!entity.route || entity.route.length < 2) {
-    return entity
+): Unit {
+  if (!unit.route || unit.route.length < 2) {
+    return unit
   }
 
   const totalDistanceToTravel = calculateDistancePerFrame(
-    entity.speed, 
+    unit.speed, 
     speedMultiplier, 
     deltaTime
   )
 
   const moveResult = moveAlongRoute(
-    entity.position,
-    entity.route,
-    entity.currentWaypointIndex,
+    unit.position,
+    unit.route,
+    unit.currentWaypointIndex,
     totalDistanceToTravel
   )
 
   return { 
-    ...entity, 
+    ...unit, 
     position: moveResult.newPosition,
     currentWaypointIndex: moveResult.newWaypointIndex
   }
@@ -132,75 +132,75 @@ function getDistance(pos1: [number, number], pos2: [number, number]): number {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
-export function hasReachedDestination(entity: Entity): boolean {
-  if (!entity.route || entity.route.length < 2) {
+export function hasReachedDestination(unit: Unit): boolean {
+  if (!unit.route || unit.route.length < 2) {
     return true
   }
   
-  if (entity.currentWaypointIndex >= entity.route.length - 1) {
+  if (unit.currentWaypointIndex >= unit.route.length - 1) {
     return true
   }
   
-  const finalWaypoint = entity.route[entity.route.length - 1]
-  const distance = getDistance(entity.position, finalWaypoint)
+  const finalWaypoint = unit.route[unit.route.length - 1]
+  const distance = getDistance(unit.position, finalWaypoint)
   
   return distance < 0.0001
 }
 
-export function checkCollision(entity1: Entity, entity2: Entity): boolean {
-  const distance = getDistance(entity1.position, entity2.position)
+export function checkCollision(unit1: Unit, unit2: Unit): boolean {
+  const distance = getDistance(unit1.position, unit2.position)
 
   const baseDistance = 0.005
   const rangeBonus = 0.002
   
-  const maxRange = Math.max(entity1.range || 0, entity2.range || 0)
+  const maxRange = Math.max(unit1.range || 0, unit2.range || 0)
   const combatDistance = baseDistance + (maxRange * rangeBonus)
   
   return distance < combatDistance
 }
 
-export function resolveCombat(entity1: Entity, entity2: Entity): {
-  entity1: Entity
-  entity2: Entity
+export function resolveCombat(unit1: Unit, unit2: Unit): {
+  unit1: Unit
+  unit2: Unit
   combatLog: string | null
 } {
-  if (entity1.faction === entity2.faction) {
-    return { entity1, entity2, combatLog: null }
+  if (unit1.faction === unit2.faction) {
+    return { unit1, unit2, combatLog: null }
   }
 
-  const distance = getDistance(entity1.position, entity2.position)
+  const distance = getDistance(unit1.position, unit2.position)
   const baseRange = 0.005
   const rangeIncrement = 0.002
   
-  const entity1Range = baseRange + ((entity1.range || 0) * rangeIncrement)
-  const entity2Range = baseRange + ((entity2.range || 0) * rangeIncrement)
+  const unit1Range = baseRange + ((unit1.range || 0) * rangeIncrement)
+  const unit2Range = baseRange + ((unit2.range || 0) * rangeIncrement)
   
-  const entity1CanHit = distance <= entity1Range
-  const entity2CanHit = distance <= entity2Range
+  const unit1CanHit = distance <= unit1Range
+  const unit2CanHit = distance <= unit2Range
   
-  const entity1DamageDealt = (entity1CanHit && entity1.ammunition > 0)
-    ? Math.max(3, entity1.ammunition / 10)
+  const unit1DamageDealt = (unit1CanHit && unit1.ammunition > 0)
+    ? Math.max(3, unit1.ammunition / 10)
     : 0
-  const entity2DamageDealt = (entity2CanHit && entity2.ammunition > 0)
-    ? Math.max(3, entity2.ammunition / 10)
+  const unit2DamageDealt = (unit2CanHit && unit2.ammunition > 0)
+    ? Math.max(3, unit2.ammunition / 10)
     : 0
 
-  let updated1 = { ...entity1 }
-  let updated2 = { ...entity2 }
+  let updated1 = { ...unit1 }
+  let updated2 = { ...unit2 }
 
-  if (entity1DamageDealt > 0) {
+  if (unit1DamageDealt > 0) {
 
-    updated2.damage = Math.min(100, updated2.damage + entity1DamageDealt)
+    updated2.damage = Math.min(100, updated2.damage + unit1DamageDealt)
   }
 
-  if (entity2DamageDealt > 0) {
-      updated1.damage = Math.min(100, updated1.damage + entity2DamageDealt)
+  if (unit2DamageDealt > 0) {
+      updated1.damage = Math.min(100, updated1.damage + unit2DamageDealt)
   }
 
-  if (entity1CanHit && entity1.ammunition > 0) {
+  if (unit1CanHit && unit1.ammunition > 0) {
     updated1.ammunition = Math.max(0, updated1.ammunition - 5)
   }
-  if (entity2CanHit && entity2.ammunition > 0) {
+  if (unit2CanHit && unit2.ammunition > 0) {
     updated2.ammunition = Math.max(0, updated2.ammunition - 5)
   }
 
@@ -217,13 +217,13 @@ export function resolveCombat(entity1: Entity, entity2: Entity): {
   }
 
   let combatLog = ''
-  if (entity1CanHit && entity2CanHit) {
-    combatLog = `${entity1.callSign} ⚔️ ${entity2.callSign} - Damage: ${entity1DamageDealt.toFixed(1)} / ${entity2DamageDealt.toFixed(1)}`
-  } else if (entity1CanHit && !entity2CanHit) {
-    combatLog = `${entity1.callSign} 🎯 ${entity2.callSign} (OUT OF RANGE) - Damage: ${entity1DamageDealt.toFixed(1)} / 0`
-  } else if (!entity1CanHit && entity2CanHit) {
-    combatLog = `${entity2.callSign} 🎯 ${entity1.callSign} (OUT OF RANGE) - Damage: ${entity2DamageDealt.toFixed(1)} / 0`
+  if (unit1CanHit && unit2CanHit) {
+    combatLog = `${unit1.callSign} ⚔️ ${unit2.callSign} - Damage: ${unit1DamageDealt.toFixed(1)} / ${unit2DamageDealt.toFixed(1)}`
+  } else if (unit1CanHit && !unit2CanHit) {
+    combatLog = `${unit1.callSign} 🎯 ${unit2.callSign} (OUT OF RANGE) - Damage: ${unit1DamageDealt.toFixed(1)} / 0`
+  } else if (!unit1CanHit && unit2CanHit) {
+    combatLog = `${unit2.callSign} 🎯 ${unit1.callSign} (OUT OF RANGE) - Damage: ${unit2DamageDealt.toFixed(1)} / 0`
   }
 
-  return { entity1: updated1, entity2: updated2, combatLog }
+  return { unit1: updated1, unit2: updated2, combatLog }
 }

@@ -18,7 +18,7 @@ A real-time tactical military simulation application built with React, TypeScrip
 
 ### User Interface
 - **Simulation Controls**: Play/Pause simulation with adjustable speed (1x-100x)
-- **Entity Information Panel**: Detailed stats for selected units (position, damage, ammunition, etc.)
+- **Unit Information Panel**: Detailed stats for selected units (position, damage, ammunition, etc.)
 - **Combat Log**: Real-time feed of combat engagements and outcomes
 - **Draggable Sidebar**: Reorder UI panels via drag-and-drop for customized layout
 
@@ -73,7 +73,7 @@ npm run preview
 ## 🔧 Technical Details
 
 ### State Management
-- **Zustand**: Lightweight state management for simulation state, entities, and UI
+- **Zustand**: Lightweight state management for simulation state, units, and UI
 
 ### Simulation Engine
 - **Movement System**: 
@@ -89,7 +89,7 @@ npm run preview
 
 ### Performance Optimizations
 - 60 FPS animation loop using setInterval
-- Efficient entity updates with immutable state patterns
+- Efficient unit updates with immutable state patterns
 - Memoized map rendering
 - Optimized collision detection
 

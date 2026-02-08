@@ -1,4 +1,4 @@
-export interface Entity {
+export interface Unit {
     id: string
     type: string
     callSign: string
@@ -15,7 +15,7 @@ export interface Entity {
     status: 'active' | 'damaged' | 'destroyed'
   }
   
-  export const humanForces: Entity[] = [
+  export const humanForces: Unit[] = [
     {
       id: 'human-1',
       type: 'Infantry Squad',
@@ -249,7 +249,7 @@ export interface Entity {
   ]
   
   // Alien Invasion Forces - Attacking from the North
-  export const alienForces: Entity[] = [
+  export const alienForces: Unit[] = [
     {
       id: 'alien-1',
       type: 'Scout Drone',
@@ -529,16 +529,16 @@ export interface Entity {
     }
   ]
   
-  export const mockEntities: Entity[] = [...humanForces, ...alienForces]
+  export const mockunits: Unit[] = [...humanForces, ...alienForces]
   
-  export const getEntitiesByFaction = (faction: 'human' | 'alien'): Entity[] => {
-    return mockEntities.filter(entity => entity.faction === faction)
+  export const getunitsByFaction = (faction: 'human' | 'alien'): Unit[] => {
+    return mockunits.filter(unit => unit.faction === faction)
   }
   
-  export const getActiveEntities = (): Entity[] => {
-    return mockEntities.filter(entity => entity.status === 'active')
+  export const getActiveunits = (): Unit[] => {
+    return mockunits.filter(unit => unit.status === 'active')
   }
   
-  export const getEntityById = (id: string): Entity | undefined => {
-    return mockEntities.find(entity => entity.id === id)
+  export const getUnitById = (id: string): Unit | undefined => {
+    return mockunits.find(unit => unit.id === id)
   }

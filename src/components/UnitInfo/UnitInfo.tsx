@@ -1,18 +1,18 @@
 import { useSimulationStore } from '../../store/SimulationStore'
-import './EntityInfo.css'
+import './UnitInfo.css'
 
-const EntityInfo = () => {
-  const selectedEntity = useSimulationStore((state) => state.selectedEntity)
-  const entities = useSimulationStore((state) => state.entities)
+const UnitInfo = () => {
+  const selectedUnit = useSimulationStore((state) => state.selectedUnit)
+  const units = useSimulationStore((state) => state.units)
 
-  const currentEntity = selectedEntity 
-    ? entities.find(e => e.id === selectedEntity.id) || selectedEntity
+  const currentUnit = selectedUnit 
+    ? units.find(e => e.id === selectedUnit.id) || selectedUnit
     : null
 
-  if (!currentEntity) {
+  if (!currentUnit) {
     return (
-      <div className="panel entity-info-panel">
-        <div className="panel-header">Entity Information</div>
+      <div className="panel unit-info-panel">
+        <div className="panel-header">Unit Information</div>
         <div className="panel-content">
           <div className="no-selection">
             <p>Click on a unit to view details</p>
@@ -22,47 +22,47 @@ const EntityInfo = () => {
     )
   }
 
-  const isAlien = currentEntity.faction === 'alien'
+  const isAlien = currentUnit.faction === 'alien'
   const factionColor = isAlien ? '#ff0066' : '#0066ff'
 
   return (
-    <div className="panel entity-info-panel">
+    <div className="panel unit-info-panel">
       <div className="panel-header" style={{ borderBottom: `2px solid ${factionColor}` }}>
         Unit Information
       </div>
-      <div className="panel-content entity-info-content">
-        <div className="entity-header">
+      <div className="panel-content unit-info-content">
+        <div className="unit-header">
           <h3 style={{ color: factionColor }}>
-            {currentEntity.callSign}
+            {currentUnit.callSign}
           </h3>
-          <span className={`faction-badge ${currentEntity.faction}`}>
-            {currentEntity.faction === 'human' ? '🔵 HUMAN' : '🔴 ALIEN'}
+          <span className={`faction-badge ${currentUnit.faction}`}>
+            {currentUnit.faction === 'human' ? '🔵 HUMAN' : '🔴 ALIEN'}
           </span>
         </div>
 
-        <div className="entity-details">
+        <div className="unit-details">
           <div className="detail-row">
             <span className="label">Type:</span>
-            <span className="value">{currentEntity.type}</span>
+            <span className="value">{currentUnit.type}</span>
           </div>
 
           <div className="detail-row">
             <span className="label">Status:</span>
-            <span className={`value status-${currentEntity.status}`}>
-              {currentEntity.status.toUpperCase()}
+            <span className={`value status-${currentUnit.status}`}>
+              {currentUnit.status.toUpperCase()}
             </span>
           </div>
 
           <div className="detail-row">
             <span className="label">Task:</span>
-            <span className="value task">{currentEntity.task}</span>
+            <span className="value task">{currentUnit.task}</span>
           </div>
 
           <div className="detail-section">
             <h4>Combat Stats</h4>
             <div className="detail-row">
               <span className="label">Speed:</span>
-              <span className="value">{currentEntity.speed} km/h</span>
+              <span className="value">{currentUnit.speed} km/h</span>
             </div>
 
             <div className="detail-row">
@@ -70,9 +70,9 @@ const EntityInfo = () => {
               <div className="progress-bar">
                 <div 
                   className="progress-fill ammo"
-                  style={{ width: `${currentEntity.ammunition}%` }}
+                  style={{ width: `${currentUnit.ammunition}%` }}
                 />
-                <span className="progress-text">{currentEntity.ammunition}%</span>
+                <span className="progress-text">{currentUnit.ammunition}%</span>
               </div>
             </div>
 
@@ -81,9 +81,9 @@ const EntityInfo = () => {
               <div className="progress-bar">
                 <div 
                   className="progress-fill damage"
-                  style={{ width: `${currentEntity.damage}%` }}
+                  style={{ width: `${currentUnit.damage}%` }}
                 />
-                <span className="progress-text">{currentEntity.damage}%</span>
+                <span className="progress-text">{currentUnit.damage}%</span>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ const EntityInfo = () => {
             <div className="detail-row">
               <span className="label">Coordinates:</span>
               <span className="value coordinates">
-                {currentEntity.position[1].toFixed(4)}°N, {currentEntity.position[0].toFixed(4)}°E
+                {currentUnit.position[1].toFixed(4)}°N, {currentUnit.position[0].toFixed(4)}°E
               </span>
             </div>
           </div>
@@ -103,4 +103,4 @@ const EntityInfo = () => {
   )
 }
 
-export default EntityInfo
+export default UnitInfo

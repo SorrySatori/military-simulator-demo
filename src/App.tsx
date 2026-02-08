@@ -2,16 +2,16 @@ import { useState } from 'react'
 import MenuBar from './components/MenuBar/MenuBar'
 import MapPanel from './components/MapPanel/MapPanel'
 import SimulationControl from './components/SimulationControl/SimulationControl'
-import EntityInfo from './components/EntityInfo/EntityInfo'
+import UnitInfo from './components/UnitInfo/UnitInfo'
 import DataLog from './components/DataLog/DataLog'
 import './components/Panel.css'
 import './App.css'
 import ModalAboutInfo from './components/Modal/ModalAboutInfo'
 
-type PanelType = 'controls' | 'entity' | 'log'
+type PanelType = 'controls' | 'unit' | 'log'
 
 function App() {
-  const [panelOrder, setPanelOrder] = useState<PanelType[]>(['controls', 'entity', 'log'])
+  const [panelOrder, setPanelOrder] = useState<PanelType[]>(['controls', 'unit', 'log'])
   const [draggedPanel, setDraggedPanel] = useState<PanelType | null>(null)
   const [dragOverPanel, setDragOverPanel] = useState<PanelType | null>(null)
   const [showAboutModal, setShowAboutModal] = useState(false)
@@ -59,7 +59,7 @@ function App() {
   const renderPanel = (panelType: PanelType) => {
     const panelComponents = {
       controls: <SimulationControl />,
-      entity: <EntityInfo />,
+      unit: <UnitInfo />,
       log: <DataLog />
     }
 

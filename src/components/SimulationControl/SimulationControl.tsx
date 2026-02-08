@@ -8,7 +8,7 @@ const SimulationControl = () => {
 
     const isRunning = useSimulationStore((state) => state.isRunning)
     const toggleRunning = useSimulationStore((state) => state.toggleRunning)
-    const resetEntities = useSimulationStore((state) => state.resetEntities)
+    const resetunits = useSimulationStore((state) => state.resetunits)
     const tick = useSimulationStore((state) => state.tick)
     const speed = useSimulationStore((state) => state.speed)
     const setSpeed = useSimulationStore((state) => state.setSpeed)
@@ -43,7 +43,7 @@ const SimulationControl = () => {
     }, [isRunning, tick])
   
     const handleReset = () => {
-      resetEntities()
+      resetunits()
       lastTickRef.current = Date.now()
     }
 
