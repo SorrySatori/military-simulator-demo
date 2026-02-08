@@ -10,6 +10,8 @@ const SimulationControl = () => {
     const toggleRunning = useSimulationStore((state) => state.toggleRunning)
     const resetEntities = useSimulationStore((state) => state.resetEntities)
     const tick = useSimulationStore((state) => state.tick)
+    const speed = useSimulationStore((state) => state.speed)
+    const setSpeed = useSimulationStore((state) => state.setSpeed)
     
     const lastTickRef = useRef<number>(Date.now())
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -61,6 +63,19 @@ const SimulationControl = () => {
           >
             ↻ Reset
           </button>
+          
+          <div className="speed-control">
+            <label htmlFor="speed-slider">Speed: {speed}x</label>
+            <input
+              id="speed-slider"
+              type="range"
+              min="1"
+              max="100"
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="speed-slider"
+            />
+          </div>
       </div>
     </div>
   )
