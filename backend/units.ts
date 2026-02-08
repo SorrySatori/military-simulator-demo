@@ -19,7 +19,7 @@ export const humanForces: Unit[] = [
   {
     id: 'human-1',
     type: 'Infantry Squad',
-    callSign: 'Alpha-1',
+    callSign: 'UZP-1',
     position: [18.320000, 49.835000],
     route: [
       [18.320000, 49.835000],
@@ -32,18 +32,18 @@ export const humanForces: Unit[] = [
       [18.323500, 49.852500],
       [18.324000, 49.855000],
       [18.324500, 49.857500],
-      [18.325000, 49.860000],
-      [18.325500, 49.862500],
-      [18.326000, 49.865000],
-      [18.326500, 49.867500],
-      [18.327000, 49.870000],
-      [18.327500, 49.872500],
-      [18.328000, 49.875000],
-      [18.328500, 49.877500],
-      [18.329000, 49.880000]
+      [18.328000, 49.860000],
+      [18.335500, 49.862500],
+      [18.336000, 49.865000],
+      [18.340500, 49.865000],
+      [18.347000, 49.860000],
+      [18.357500, 49.855000],
+      [18.368000, 49.852500],
+      [18.378500, 49.842500],
+      [18.389000, 49.837500]
     ],
     currentWaypointIndex: 0,
-    task: 'Advance north - Engage alien forces',
+    task: 'Advance north',
     speed: 5,
     damage: 0,
     ammunition: 100,
@@ -55,7 +55,7 @@ export const humanForces: Unit[] = [
   {
     id: 'human-2',
     type: 'Infantry Squad',
-    callSign: 'Alpha-2',
+    callSign: 'UZP-2',
     position: [18.325000, 49.836000],
     route: [
       [18.325000, 49.836000],
@@ -70,16 +70,16 @@ export const humanForces: Unit[] = [
       [18.329500, 49.858500],
       [18.330000, 49.861000],
       [18.330500, 49.863500],
-      [18.331000, 49.866000],
-      [18.331500, 49.868500],
-      [18.332000, 49.871000],
-      [18.332500, 49.873500],
-      [18.333000, 49.876000],
-      [18.333500, 49.878500],
-      [18.334000, 49.881000]
+      [18.341000, 49.866000],
+      [18.351500, 49.868500],
+      [18.362000, 49.871000],
+      [18.365500, 49.873500],
+      [18.373000, 49.876000],
+      [18.383500, 49.878500],
+      [18.394000, 49.881000]
     ],
     currentWaypointIndex: 0,
-    task: 'Advance north - Support Alpha-1',
+    task: 'Advance north',
     speed: 5,
     damage: 15,
     ammunition: 85,
@@ -151,8 +151,8 @@ export const humanForces: Unit[] = [
     currentWaypointIndex: 0,
     task: 'Advance north - Flank security',
     speed: 18,
-    damage: 25,
-    ammunition: 80,
+    damage: 15,
+    ammunition: 120,
     range: 2,
     natoCode: 'SFG-UCAT---D',
     faction: 'human',
@@ -174,18 +174,18 @@ export const humanForces: Unit[] = [
       [18.317000, 49.856000],
       [18.318000, 49.859000],
       [18.319000, 49.862000],
-      [18.320000, 49.865000],
-      [18.321000, 49.868000],
-      [18.322000, 49.871000],
-      [18.323000, 49.874000],
-      [18.324000, 49.877000],
-      [18.325000, 49.880000]
+      [18.330000, 49.865000],
+      [18.335000, 49.868000],
+      [18.336000, 49.871000],
+      [18.337000, 49.874000],
+      [18.340000, 49.877000],
+      [18.345000, 49.880000]
     ],
     currentWaypointIndex: 0,
     task: 'Fire support - Priority targets',
     speed: 12,
     damage: 5,
-    ammunition: 70,
+    ammunition: 120,
     range: 3,
     natoCode: 'SFG-UCFH---D',
     faction: 'human',
@@ -219,7 +219,7 @@ export const humanForces: Unit[] = [
     task: 'Area denial',
     speed: 14,
     damage: 0,
-    ammunition: 65,
+    ammunition: 165,
     range: 3,
     natoCode: 'SFG-UCFR---D',
     faction: 'human',
@@ -266,22 +266,6 @@ export const humanForces: Unit[] = [
     position: [18.312000, 49.830000],
     route: [
       [18.312000, 49.830000],
-      [18.313000, 49.833000],
-      [18.314000, 49.836000],
-      [18.315000, 49.839000],
-      [18.316000, 49.842000],
-      [18.317000, 49.845000],
-      [18.318000, 49.848000],
-      [18.319000, 49.851000],
-      [18.320000, 49.854000],
-      [18.321000, 49.857000],
-      [18.322000, 49.860000],
-      [18.323000, 49.863000],
-      [18.324000, 49.866000],
-      [18.325000, 49.869000],
-      [18.326000, 49.872000],
-      [18.327000, 49.875000],
-      [18.328000, 49.878000]
     ],
     currentWaypointIndex: 0,
     task: 'Medical support',
@@ -310,13 +294,14 @@ export const alienForces: Unit[] = [
       [18.335000, 49.850000],
       [18.333000, 49.845000],
       [18.331000, 49.840000],
-      [18.329000, 49.835000]
+      [18.329000, 49.835000],
+      [18.329000, 49.855000]
     ],
     currentWaypointIndex: 0,
     task: 'Scout south - Locate human forces',
     speed: 30,
     damage: 0,
-    ammunition: 70,
+    ammunition: 100,
     range: 1,
     natoCode: 'SHG-UCI----H',
     faction: 'alien',
@@ -336,13 +321,16 @@ export const alienForces: Unit[] = [
       [18.333000, 49.847000],
       [18.332000, 49.842000],
       [18.331000, 49.837000],
-      [18.330000, 49.832000]
+      [18.330000, 49.832000],
+      [18.330000, 49.842000],
+      [18.330000, 49.852000],
+
     ],
     currentWaypointIndex: 0,
     task: 'Attack south - Electronic warfare',
     speed: 28,
     damage: 10,
-    ammunition: 65,
+    ammunition: 95,
     range: 1,
     natoCode: 'SHG-UCIW---H',
     faction: 'alien',
@@ -361,13 +349,15 @@ export const alienForces: Unit[] = [
       [18.334000, 49.848000],
       [18.332000, 49.843000],
       [18.330000, 49.838000],
-      [18.328000, 49.833000]
+      [18.328000, 49.833000],
+      [18.328000, 49.843000],
+      [18.328000, 49.853000]
     ],
     currentWaypointIndex: 0,
     task: 'Attack south - Destroy human armor',
     speed: 22,
     damage: 20,
-    ammunition: 85,
+    ammunition: 105,
     range: 2,
     natoCode: 'SHG-UCAT---H',
     faction: 'alien',
@@ -375,7 +365,7 @@ export const alienForces: Unit[] = [
   },
   {
     id: 'alien-4',
-    type: 'Assault Walker',
+    type: 'Hard to Describe Assault Walker',
     callSign: 'Heavy-Gamma-3',
     position: [18.348000, 49.865000],
     route: [
@@ -395,7 +385,7 @@ export const alienForces: Unit[] = [
       [18.334000, 49.835000]
     ],
     currentWaypointIndex: 0,
-    task: 'Attack south - Hunter-killer protocol',
+    task: 'Attack south - Confuse everybody with its appearance',
     speed: 24,
     damage: 0,
     ammunition: 90,
@@ -406,20 +396,26 @@ export const alienForces: Unit[] = [
   },
   {
     id: 'alien-5',
-    type: 'Devastator Mech',
+    type: 'Existential Crisis Deathray',
     callSign: 'Heavy-Gamma-1',
     position: [18.350000, 49.870000],
     route: [
       [18.350000, 49.870000],
       [18.343000, 49.864000],
       [18.336000, 49.858000],
-      [18.329000, 49.852000]
+      [18.329000, 49.852000],
+      [18.322000, 49.846000],
+      [18.315000, 49.840000],
+      [18.308000, 49.834000],
+      [18.301000, 49.828000],
+      [18.294000, 49.822000],
+      [18.287000, 49.816000]
     ],
     currentWaypointIndex: 0,
-    task: 'Area bombardment',
+    task: 'Search and depress human forces',
     speed: 16,
     damage: 15,
-    ammunition: 95,
+    ammunition: 125,
     range: 3,
     natoCode: 'SHG-UCFH---H',
     faction: 'alien',
@@ -427,20 +423,26 @@ export const alienForces: Unit[] = [
   },
   {
     id: 'alien-6',
-    type: 'Siege Platform',
-    callSign: 'Heavy-Gamma-2',
+    type: 'Terminating Terminal Terminator',
+    callSign: 'Neptun-Neptun-123',
     position: [18.355000, 49.868000],
     route: [
       [18.355000, 49.868000],
       [18.348000, 49.862000],
       [18.341000, 49.856000],
-      [18.334000, 49.850000]
+      [18.334000, 49.850000],
+      [18.327000, 49.844000],
+      [18.320000, 49.838000],
+      [18.313000, 49.832000],
+      [18.306000, 49.826000],
+      [18.299000, 49.820000],
+      [18.292000, 49.814000]
     ],
     currentWaypointIndex: 0,
     task: 'Breach defensive lines',
     speed: 14,
     damage: 30,
-    ammunition: 80,
+    ammunition: 140,
     range: 3,
     natoCode: 'SHG-UCFR---H',
     faction: 'alien',
@@ -469,7 +471,7 @@ export const alienForces: Unit[] = [
   },
   {
     id: 'alien-8',
-    type: 'Interceptor',
+    type: 'Cybertentacle Interceptor',
     callSign: 'Air-Epsilon-1',
     position: [18.315000, 49.880000],
     route: [
@@ -491,7 +493,7 @@ export const alienForces: Unit[] = [
   },
   {
     id: 'alien-9',
-    type: 'Bomber Craft',
+    type: 'Ultra Bomber 3000',
     callSign: 'Air-Epsilon-3',
     position: [18.340000, 49.882000],
     route: [
@@ -499,13 +501,14 @@ export const alienForces: Unit[] = [
       [18.338000, 49.872000],
       [18.336000, 49.862000],
       [18.334000, 49.852000],
-      [18.332000, 49.842000]
+      [18.332000, 49.842000],
+      [18.322000, 49.852000],
     ],
     currentWaypointIndex: 0,
     task: 'Strategic bombardment',
     speed: 35,
     damage: 0,
-    ammunition: 100,
+    ammunition: 150,
     range: 3,
     natoCode: 'SHA-MFB----H',
     faction: 'alien',
@@ -520,7 +523,7 @@ export const alienForces: Unit[] = [
       [18.328000, 49.885000],
       [18.329000, 49.875000],
       [18.330000, 49.865000],
-      [18.331000, 49.855000]
+      [18.331000, 49.855000],
     ],
     currentWaypointIndex: 0,
     task: 'Hive coordination',
@@ -536,16 +539,4 @@ export const alienForces: Unit[] = [
 
 export const getAllUnits = (): Unit[] => {
   return JSON.parse(JSON.stringify([...humanForces, ...alienForces]))
-}
-
-export const getUnitsByFaction = (faction: 'human' | 'alien'): Unit[] => {
-  return getAllUnits().filter(unit => unit.faction === faction)
-}
-
-export const getActiveUnits = (): Unit[] => {
-  return getAllUnits().filter(unit => unit.status === 'active')
-}
-
-export const getUnitById = (id: string): Unit | undefined => {
-  return getAllUnits().find(unit => unit.id === id)
 }

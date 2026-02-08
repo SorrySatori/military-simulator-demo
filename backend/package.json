@@ -8,12 +8,6 @@
     "start": "tsx server.ts",
     "dev": "tsx watch server.ts"
   },
-  "keywords": [
-    "websocket",
-    "simulation",
-    "military"
-  ],
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "ws": "^8.18.0"
