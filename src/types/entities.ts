@@ -11,11 +11,8 @@ export interface Entity {
     natoCode: string
     faction: 'human' | 'alien'
     status: 'active' | 'damaged' | 'destroyed'
-    shields?: number
-    energy?: number
   }
   
-  // Human Conventional Forces - Defending from the South
   export const humanForces: Entity[] = [
     {
       id: 'human-1',
@@ -86,7 +83,6 @@ export interface Entity {
       status: 'active'
     },
     
-    // Western Armor Column - Moving East
     {
       id: 'human-3',
       type: 'Main Battle Tank',
@@ -154,7 +150,6 @@ export interface Entity {
       status: 'damaged'
     },
   
-    // Eastern Support Units - Moving West
     {
       id: 'human-5',
       type: 'Artillery Battery',
@@ -194,7 +189,6 @@ export interface Entity {
       status: 'active'
     },
   
-    // Mobile AA and Command - Central position
     {
       id: 'human-7',
       type: 'SAM Battery',
@@ -238,7 +232,6 @@ export interface Entity {
   
   // Alien Invasion Forces - Attacking from the North
   export const alienForces: Entity[] = [
-    // Northern Scout Screen - Fast moving south
     {
       id: 'alien-1',
       type: 'Scout Drone',
@@ -274,8 +267,6 @@ export interface Entity {
       natoCode: 'SHG-UCI----H',
       faction: 'alien',
       status: 'active',
-      shields: 100,
-      energy: 100
     },
     {
       id: 'alien-2',
@@ -310,11 +301,8 @@ export interface Entity {
       natoCode: 'SHG-UCIW---H',
       faction: 'alien',
       status: 'active',
-      shields: 85,
-      energy: 90
     },
   
-    // Western Alien Assault - Moving Southeast
     {
       id: 'alien-3',
       type: 'Assault Walker',
@@ -346,8 +334,6 @@ export interface Entity {
       natoCode: 'SHG-UCAT---H',
       faction: 'alien',
       status: 'damaged',
-      shields: 60,
-      energy: 80
     },
     {
       id: 'alien-4',
@@ -382,11 +368,8 @@ export interface Entity {
       natoCode: 'SHG-UCAW---H',
       faction: 'alien',
       status: 'active',
-      shields: 100,
-      energy: 95
     },
   
-    // Eastern Alien Heavy Units - Moving Southwest
     {
       id: 'alien-5',
       type: 'Devastator Mech',
@@ -405,8 +388,6 @@ export interface Entity {
       natoCode: 'SHG-UCFH---H',
       faction: 'alien',
       status: 'active',
-      shields: 90,
-      energy: 75
     },
     {
       id: 'alien-6',
@@ -426,11 +407,8 @@ export interface Entity {
       natoCode: 'SHG-UCFR---H',
       faction: 'alien',
       status: 'damaged',
-      shields: 55,
-      energy: 60
     },
   
-    // Central Alien Support - Moving South
     {
       id: 'alien-7',
       type: 'Energy Harvester',
@@ -449,11 +427,8 @@ export interface Entity {
       natoCode: 'SHG-UCS----H',
       faction: 'alien',
       status: 'active',
-      shields: 80,
-      energy: 100
     },
   
-    // Air Units - Sweeping across the battlefield
     {
       id: 'alien-8',
       type: 'Interceptor',
@@ -473,8 +448,6 @@ export interface Entity {
       natoCode: 'SHA-MFF----H',
       faction: 'alien',
       status: 'active',
-      shields: 95,
-      energy: 90
     },
     {
       id: 'alien-9',
@@ -495,11 +468,8 @@ export interface Entity {
       natoCode: 'SHA-MFB----H',
       faction: 'alien',
       status: 'active',
-      shields: 100,
-      energy: 85
     },
   
-    // Command - Following from the rear
     {
       id: 'alien-10',
       type: 'Command Nexus',
@@ -518,8 +488,6 @@ export interface Entity {
       natoCode: 'SHG-UH-----H',
       faction: 'alien',
       status: 'active',
-      shields: 100,
-      energy: 100
     }
   ]
   

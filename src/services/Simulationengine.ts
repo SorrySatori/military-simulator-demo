@@ -103,7 +103,6 @@ export function checkCollision(entity1: Entity, entity2: Entity): boolean {
   const distance = getDistance(entity1.position, entity2.position)
   
   const collisionDistance = 0.005
-  
   return distance < collisionDistance
 }
 
@@ -117,59 +116,39 @@ export function resolveCombat(entity1: Entity, entity2: Entity): {
   }
 
   const entity1DamageDealt = entity1.ammunition > 0 
-    ? Math.min(15, Math.max(3, entity1.ammunition / 10))
+    ? Math.max(3, entity1.ammunition / 10)
     : 0
   const entity2DamageDealt = entity2.ammunition > 0
-    ? Math.min(15, Math.max(3, entity2.ammunition / 10))
+    ? Math.max(3, entity2.ammunition / 10)
     : 0
 
-  let updated1 = { ...entity1 }
-  let updated2 = { ...entity2 }
+  let updatedEntity1 = { ...entity1 }
+  let updatedEntity2 = { ...entity2 }
 
   if (entity1DamageDealt > 0) {
-    if (updated2.shields !== undefined && updated2.shields > 0) {
-      updated2.shields = Math.max(0, updated2.shields - entity1DamageDealt)
-      if (updated2.shields === 0) {
-        const overflow = entity1DamageDealt - (entity2.shields || 0)
-        if (overflow > 0) {
-          updated2.damage = Math.min(100, updated2.damage + overflow)
-        }
-      }
-    } else {
-      updated2.damage = Math.min(100, updated2.damage + entity1DamageDealt)
-    }
+    updatedEntity2.damage = Math.min(100, updatedEntity2.damage + entity1DamageDealt)
   }
 
   if (entity2DamageDealt > 0) {
-    if (updated1.shields !== undefined && updated1.shields > 0) {
-      updated1.shields = Math.max(0, updated1.shields - entity2DamageDealt)
-      if (updated1.shields === 0) {
-        const overflow = entity2DamageDealt - (entity1.shields || 0)
-        if (overflow > 0) {
-          updated1.damage = Math.min(100, updated1.damage + overflow)
-        }
-      }
-    } else {
-      updated1.damage = Math.min(100, updated1.damage + entity2DamageDealt)
-    }
+    updatedEntity1.damage = Math.min(100, updatedEntity1.damage + entity2DamageDealt)
   }
 
-  updated1.ammunition = Math.max(0, updated1.ammunition - 2)
-  updated2.ammunition = Math.max(0, updated2.ammunition - 2)
+  updatedEntity1.ammunition = Math.max(0, updatedEntity1.ammunition - 2)
+  updatedEntity2.ammunition = Math.max(0, updatedEntity2.ammunition - 2)
 
-  if (updated1.damage >= 100) {
-    updated1.status = 'destroyed'
-  } else if (updated1.damage >= 50) {
-    updated1.status = 'damaged'
+  if (updatedEntity1.damage >= 100) {
+    updatedEntity1.status = 'destroyed'
+  } else if (updatedEntity1.damage >= 50) {
+    updatedEntity1.status = 'damaged'
   }
 
-  if (updated2.damage >= 100) {
-    updated2.status = 'destroyed'
-  } else if (updated2.damage >= 50) {
-    updated2.status = 'damaged'
+  if (updatedEntity2.damage >= 100) {
+    updatedEntity2.status = 'destroyed'
+  } else if (updatedEntity2.damage >= 50) {
+    updatedEntity2.status = 'damaged'
   }
 
   const combatLog = `${entity1.callSign} engaged ${entity2.callSign}! Damage dealt: ${entity1DamageDealt.toFixed(1)} / ${entity2DamageDealt.toFixed(1)}`
 
-  return { entity1: updated1, entity2: updated2, combatLog }
+  return { entity1: updatedEntity1, entity2: updatedEntity2, combatLog }
 }

@@ -88,38 +88,6 @@ const EntityInfo = () => {
             </div>
           </div>
 
-          {isAlien && (currentEntity.shields !== undefined || currentEntity.energy !== undefined) && (
-            <div className="detail-section alien-stats">
-              <h4>Alien Systems</h4>
-              
-              {currentEntity.shields !== undefined && (
-                <div className="detail-row">
-                  <span className="label">Shields:</span>
-                  <div className="progress-bar">
-                    <div 
-                      className="progress-fill shields"
-                      style={{ width: `${currentEntity.shields}%` }}
-                    />
-                    <span className="progress-text">{currentEntity.shields}%</span>
-                  </div>
-                </div>
-              )}
-
-              {currentEntity.energy !== undefined && (
-                <div className="detail-row">
-                  <span className="label">Energy:</span>
-                  <div className="progress-bar">
-                    <div 
-                      className="progress-fill energy"
-                      style={{ width: `${currentEntity.energy}%` }}
-                    />
-                    <span className="progress-text">{currentEntity.energy}%</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           <div className="detail-section">
             <h4>Position</h4>
             <div className="detail-row">
