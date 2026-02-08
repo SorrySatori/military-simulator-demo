@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { Entity } from '../types/entities'
-import { moveEntity, checkCollision, resolveCombat, hasReachedDestination } from '../services/Simulationengine'
+import { moveEntity, checkCollision, resolveCombat, hasReachedDestination } from '../services/SimulationEngine'
 import { mockEntities } from '../types/entities'
 
 interface SimulationState {

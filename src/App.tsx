@@ -1,56 +1,99 @@
 import { useState } from 'react'
-import ReactGridLayout from 'react-grid-layout'
 import MenuBar from './components/MenuBar/MenuBar'
 import MapPanel from './components/MapPanel/MapPanel'
 import SimulationControl from './components/SimulationControl/SimulationControl'
 import EntityInfo from './components/EntityInfo/EntityInfo'
 import DataLog from './components/DataLog/DataLog'
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
 import './components/Panel.css'
 import './App.css'
 
+type PanelType = 'controls' | 'entity' | 'log'
+
 function App() {
-  const [layout] = useState([
-    { i: 'map', x: 0, y: 0, w: 8, h: 12 },
-    { i: 'controls', x: 8, y: 0, w: 4, h: 6 },
-    { i: 'entity', x: 8, y: 6, w: 4, h: 6 },
-    { i: 'log', x: 0, y: 12, w: 12, h: 6 }
-  ])
+  const [panelOrder, setPanelOrder] = useState<PanelType[]>(['controls', 'entity', 'log'])
+  const [draggedPanel, setDraggedPanel] = useState<PanelType | null>(null)
+  const [dragOverPanel, setDragOverPanel] = useState<PanelType | null>(null)
+
+  const handleDragStart = (panel: PanelType) => {
+    setDraggedPanel(panel)
+  }
+
+  const handleDragOver = (event: React.DragEvent, panel: PanelType) => {
+    event.preventDefault()
+    if (draggedPanel && draggedPanel !== panel) {
+      setDragOverPanel(panel)
+    }
+  }
+
+  const handleDragLeave = () => {
+    setDragOverPanel(null)
+  }
+
+  const handleDrop = (targetPanel: PanelType) => {
+    if (!draggedPanel || draggedPanel === targetPanel) {
+      setDraggedPanel(null)
+      setDragOverPanel(null)
+      return
+    }
+
+    const newOrder = [...panelOrder]
+    const draggedIndex = newOrder.indexOf(draggedPanel)
+    const targetIndex = newOrder.indexOf(targetPanel)
+
+    newOrder.splice(draggedIndex, 1)
+    newOrder.splice(targetIndex, 0, draggedPanel)
+
+    setPanelOrder(newOrder)
+    setDraggedPanel(null)
+    setDragOverPanel(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedPanel(null)
+    setDragOverPanel(null)
+  }
+
+  const renderPanel = (panelType: PanelType) => {
+    const panelComponents = {
+      controls: <SimulationControl />,
+      entity: <EntityInfo />,
+      log: <DataLog />
+    }
+
+    return (
+      <div
+        key={panelType}
+        className={`draggable-panel 
+          ${draggedPanel === panelType ? 'dragging' : ''} 
+          ${dragOverPanel === panelType ? 'drag-over' : ''}`}
+        onDragOver={(event: React.DragEvent) => handleDragOver(event, panelType)}
+        onDragLeave={handleDragLeave}
+        onDrop={() => handleDrop(panelType)}
+      >
+        <div 
+          className="drag-handle"
+          draggable
+          onDragStart={() => handleDragStart(panelType)}
+          onDragEnd={handleDragEnd}
+        >
+          <span className="drag-icon">⋮⋮</span>
+        </div>
+        {panelComponents[panelType]}
+      </div>
+    )
+  }
 
   return (
     <div className="app">
       <MenuBar />
       <div className="content-container">
-      <div key="map">
-        <MapPanel />
+        <div key="map">
+          <MapPanel />
+        </div>
+        <div className="sidebar">
+          {panelOrder.map(panel => renderPanel(panel))}
+        </div>
       </div>
-      <div className="sidebar">
-        <SimulationControl />
-        <EntityInfo />
-        <DataLog />
-      </div>
-      </div>
-      {/* <div className="main-content">
-        <ReactGridLayout
-          className="layout"
-          layout={layout}
-          width={1200}
-        >
-          <div key="map">
-            <MapPanel />
-          </div>
-          <div key="controls">
-            <SimulationControl />
-          </div>
-          <div key="entity">
-            <EntityInfo />
-          </div>
-          <div key="log">
-            <DataLog />
-          </div>
-        </ReactGridLayout>
-      </div> */}
     </div>
   )
 }
