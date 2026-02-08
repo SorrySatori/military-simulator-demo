@@ -56,7 +56,6 @@ function App() {
         connectionTimeout = setTimeout(() => {
           if (!unitsReceived) {
             console.error('Connection timeout - no units received from backend')
-            setLoadingError('Connection timeout. Make sure the backend is running on ws://localhost:8080')
             setTimeout(() => setIsLoading(false), 2000)
           }
         }, 5000)

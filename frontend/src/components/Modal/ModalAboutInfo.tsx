@@ -6,7 +6,7 @@ const ModalAboutInfo: React.FC<{ showAboutModal: boolean; setShowAboutModal: (va
         <Modal
             isOpen={showAboutModal}
             onClose={() => setShowAboutModal(false)}
-            title="About Military Simulator"
+            title="About Simulator"
         >
             <div>
                 <p>A real-time tactical military simulation application built with React, TypeScript, and OpenLayers.</p>

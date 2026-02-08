@@ -95,7 +95,7 @@ function moveAlongRoute(
 function moveTowardWaypoint(
   currentPosition: [number, number],
   targetWaypoint: [number, number],
-  distanceBudget: number
+  remainingDistance: number
 ): {
   newPosition: [number, number]
   remainingDistance: number
@@ -105,15 +105,15 @@ function moveTowardWaypoint(
   const deltaY = targetWaypoint[1] - currentPosition[1]
   const distanceToTarget = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-  if (distanceBudget >= distanceToTarget) {
+  if (remainingDistance >= distanceToTarget) {
     return {
       newPosition: [...targetWaypoint] as [number, number],
-      remainingDistance: distanceBudget - distanceToTarget,
+      remainingDistance: remainingDistance - distanceToTarget,
       reachedWaypoint: true
     }
   }
 
-  const travelRatio = distanceBudget / distanceToTarget
+  const travelRatio = remainingDistance / distanceToTarget
   const newPosition: [number, number] = [
     currentPosition[0] + deltaX * travelRatio,
     currentPosition[1] + deltaY * travelRatio
@@ -218,11 +218,11 @@ export function resolveCombat(unit1: Unit, unit2: Unit): {
 
   let combatLog = ''
   if (unit1CanHit && unit2CanHit) {
-    combatLog = `${unit1.callSign} ⚔️ ${unit2.callSign} - Damage: ${unit1DamageDealt.toFixed(1)} / ${unit2DamageDealt.toFixed(1)}`
+    combatLog = `${unit1.callSign} ${unit2.callSign} - Damage: ${unit1DamageDealt.toFixed(1)} / ${unit2DamageDealt.toFixed(1)}`
   } else if (unit1CanHit && !unit2CanHit) {
-    combatLog = `${unit1.callSign} 🎯 ${unit2.callSign} (OUT OF RANGE) - Damage: ${unit1DamageDealt.toFixed(1)} / 0`
+    combatLog = `${unit1.callSign} ${unit2.callSign} (OUT OF RANGE) - Damage: ${unit1DamageDealt.toFixed(1)} / 0`
   } else if (!unit1CanHit && unit2CanHit) {
-    combatLog = `${unit2.callSign} 🎯 ${unit1.callSign} (OUT OF RANGE) - Damage: ${unit2DamageDealt.toFixed(1)} / 0`
+    combatLog = `${unit2.callSign} ${unit1.callSign} (OUT OF RANGE) - Damage: ${unit2DamageDealt.toFixed(1)} / 0`
   }
 
   return { unit1: updated1, unit2: updated2, combatLog }

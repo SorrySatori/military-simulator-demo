@@ -61,7 +61,6 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
     const dx = pos2[0] - pos1[0]
     const dy = pos2[1] - pos1[1]
     const distanceInDegrees = Math.sqrt(dx * dx + dy * dy)
-    // Convert degrees to kilometers (approximate)
     const distanceInKm = distanceInDegrees * 111
     return distanceInKm
   }
@@ -170,13 +169,11 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
           vectorSourceRef.current!.removeFeature(routeFeature)
         }
       } else if (feature) {
-        // Update existing feature
         const geometry = feature.getGeometry() as Point
         geometry.setCoordinates(fromLonLat(unit.position))
         feature.set('unit', unit)
         feature.setStyle(createUnitStyle(unit))
       } else {
-        // Create new feature if it doesn't exist
         feature = new Feature({
           geometry: new Point(fromLonLat(unit.position)),
           unit: unit
@@ -185,7 +182,6 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
         feature.setStyle(createUnitStyle(unit))
         vectorSourceRef.current!.addFeature(feature)
 
-        // Create route feature if unit has a route
         if (unit.route && unit.route.length > 1) {
           routeFeature = new Feature({
             geometry: new LineString(unit.route.map((coord: [number, number]) => fromLonLat(coord)))
@@ -216,7 +212,7 @@ const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps
           <div className="measurement-overlay">
             <div className="measurement-info">
               <div className="measurement-header">
-                <h4>📏 Distance Measurement</h4>
+                <h4>Distance Measurement</h4>
                 <button 
                   className="close-measurement-btn" 
                   onClick={onCloseMeasurement}

@@ -16,15 +16,9 @@ interface SimulationState {
   
   speed: number
   setSpeed: (speed: number) => void
-  
-  currentTime: number
-  setCurrentTime: (time: number) => void
-  incrementTime: () => void
-  resetTime: () => void
-  
+    
   units: Unit[]
   setunits: (units: Unit[]) => void
-  updateUnit: (id: string, updates: Partial<Unit>) => void
   tick: (deltaTime: number) => void
   resetunits: () => void
   
@@ -47,32 +41,22 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   speed: 50,
   setSpeed: (speed) => set({ speed }),
   
-  currentTime: 0,
-  setCurrentTime: (time) => set({ currentTime: time }),
-  incrementTime: () => set((state) => ({ currentTime: state.currentTime + 1 })),
-  resetTime: () => set({ currentTime: 0 }),
-  
   units: [],
   setunits: (units) => set({ units }),
-  updateUnit: (id, updates) => set((state) => ({
-    units: state.units.map((unit) =>
-      unit.id === id ? { ...unit, ...updates } : unit
-    )
-  })),
   
   tick: (deltaTime) => set((state) => {
-    let updatedunits = state.units.map((unit) => {
+    let updatedUnits = state.units.map((unit) => {
       if (unit.status === 'destroyed') return unit
       return moveUnit(unit, deltaTime, state.speed)
     })
     
     const newCombatLogs: string[] = []
-    const unitMap = new Map(updatedunits.map(e => [e.id, e]))
+    const unitMap = new Map(updatedUnits.map(e => [e.id, e]))
     
-    for (let i = 0; i < updatedunits.length; i++) {
-      for (let j = i + 1; j < updatedunits.length; j++) {
-        const unit1 = unitMap.get(updatedunits[i].id)!
-        const unit2 = unitMap.get(updatedunits[j].id)!
+    for (let i = 0; i < updatedUnits.length; i++) {
+      for (let j = i + 1; j < updatedUnits.length; j++) {
+        const unit1 = unitMap.get(updatedUnits[i].id)!
+        const unit2 = unitMap.get(updatedUnits[j].id)!
         
         if (unit1.status === 'destroyed' || unit2.status === 'destroyed') {
           continue
@@ -91,14 +75,14 @@ export const useSimulationStore = create<SimulationState>((set) => ({
       }
     }
     
-    updatedunits = Array.from(unitMap.values())
+    updatedUnits = Array.from(unitMap.values())
     
-    const allFinished = updatedunits.every(unit => 
+    const allFinished = updatedUnits.every(unit => 
       unit.status === 'destroyed' || hasReachedDestination(unit)
     )
     
     return { 
-      units: updatedunits,
+      units: updatedUnits,
       combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50),
       isRunning: allFinished ? false : state.isRunning,
       simulationEnded: allFinished ? true : state.simulationEnded
@@ -107,7 +91,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   
   resetunits: () => {
     wsService.send('reset_units')
-    set({ simulationEnded: false, combatLogs: [], currentTime: 0 })
+    set({ simulationEnded: false, combatLogs: [] })
   },
   
   combatLogs: [],
