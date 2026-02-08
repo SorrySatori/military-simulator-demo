@@ -4,6 +4,7 @@ export interface Entity {
     callSign: string
     position: [number, number]
     route: [number, number][]
+    currentWaypointIndex: number
     task: string
     speed: number
     damage: number
@@ -40,6 +41,7 @@ export interface Entity {
         [18.328500, 49.877500],
         [18.329000, 49.880000]
       ],
+      currentWaypointIndex: 0,
       task: 'Advance north - Engage alien forces',
       speed: 5,
       damage: 0,
@@ -74,6 +76,7 @@ export interface Entity {
         [18.333500, 49.878500],
         [18.334000, 49.881000]
       ],
+      currentWaypointIndex: 0,
       task: 'Advance north - Support Alpha-1',
       speed: 5,
       damage: 15,
@@ -107,6 +110,7 @@ export interface Entity {
         [18.329000, 49.877500],
         [18.330000, 49.880000]
       ],
+      currentWaypointIndex: 0,
       task: 'Armored advance - Seek and destroy',
       speed: 20,
       damage: 10,
@@ -141,6 +145,7 @@ export interface Entity {
         [18.338500, 49.880500],
         [18.339000, 49.883000]
       ],
+      currentWaypointIndex: 0,
       task: 'Advance north - Flank security',
       speed: 18,
       damage: 25,
@@ -161,6 +166,7 @@ export interface Entity {
         [18.335000, 49.849000],
         [18.330000, 49.851000]
       ],
+      currentWaypointIndex: 0,
       task: 'Fire support - Priority targets',
       speed: 12,
       damage: 5,
@@ -180,6 +186,7 @@ export interface Entity {
         [18.338000, 49.854000],
         [18.333000, 49.856000]
       ],
+      currentWaypointIndex: 0,
       task: 'Area denial',
       speed: 14,
       damage: 0,
@@ -200,6 +207,7 @@ export interface Entity {
         [18.329000, 49.856000],
         [18.331000, 49.860000]
       ],
+      currentWaypointIndex: 0,
       task: 'Air defense - Alien craft detected',
       speed: 16,
       damage: 0,
@@ -220,6 +228,7 @@ export interface Entity {
         [18.324000, 49.853000],
         [18.326000, 49.858000]
       ],
+      currentWaypointIndex: 0,
       task: 'Command and Control',
       speed: 10,
       damage: 0,
@@ -260,6 +269,7 @@ export interface Entity {
         [18.329500, 49.832500],
         [18.330000, 49.830000]
       ],
+      currentWaypointIndex: 0,
       task: 'Scout south - Locate human forces',
       speed: 30,
       damage: 0,
@@ -294,6 +304,7 @@ export interface Entity {
         [18.326500, 49.835500],
         [18.326000, 49.833000]
       ],
+      currentWaypointIndex: 0,
       task: 'Attack south - Electronic warfare',
       speed: 28,
       damage: 10,
@@ -327,6 +338,7 @@ export interface Entity {
         [18.317500, 49.837500],
         [18.318000, 49.835000]
       ],
+      currentWaypointIndex: 0,
       task: 'Attack south - Destroy human armor',
       speed: 22,
       damage: 20,
@@ -361,6 +373,7 @@ export interface Entity {
         [18.333500, 49.837500],
         [18.334000, 49.835000]
       ],
+      currentWaypointIndex: 0,
       task: 'Attack south - Hunter-killer protocol',
       speed: 24,
       damage: 0,
@@ -381,6 +394,7 @@ export interface Entity {
         [18.336000, 49.858000],
         [18.329000, 49.852000]
       ],
+      currentWaypointIndex: 0,
       task: 'Area bombardment',
       speed: 16,
       damage: 15,
@@ -400,6 +414,7 @@ export interface Entity {
         [18.341000, 49.856000],
         [18.334000, 49.850000]
       ],
+      currentWaypointIndex: 0,
       task: 'Breach defensive lines',
       speed: 14,
       damage: 30,
@@ -420,6 +435,7 @@ export interface Entity {
         [18.330000, 49.862000],
         [18.331000, 49.854000]
       ],
+      currentWaypointIndex: 0,
       task: 'Energy collection and distribution',
       speed: 10,
       damage: 0,
@@ -441,6 +457,7 @@ export interface Entity {
         [18.330000, 49.850000],
         [18.335000, 49.840000]
       ],
+      currentWaypointIndex: 0,
       task: 'Air superiority',
       speed: 40,
       damage: 5,
@@ -461,6 +478,7 @@ export interface Entity {
         [18.334000, 49.852000],
         [18.332000, 49.842000]
       ],
+      currentWaypointIndex: 0,
       task: 'Strategic bombardment',
       speed: 35,
       damage: 0,
@@ -481,6 +499,7 @@ export interface Entity {
         [18.330000, 49.865000],
         [18.331000, 49.855000]
       ],
+      currentWaypointIndex: 0,
       task: 'Hive coordination',
       speed: 8,
       damage: 0,

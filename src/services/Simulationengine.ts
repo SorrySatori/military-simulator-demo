@@ -15,13 +15,18 @@ export function moveEntity(
     deltaTime
   )
 
-  const newPosition = moveAlongRoute(
+  const moveResult = moveAlongRoute(
     entity.position,
     entity.route,
+    entity.currentWaypointIndex,
     totalDistanceToTravel
   )
 
-  return { ...entity, position: newPosition }
+  return { 
+    ...entity, 
+    position: moveResult.newPosition,
+    currentWaypointIndex: moveResult.newWaypointIndex
+  }
 }
 
 function calculateDistancePerFrame(
@@ -41,21 +46,25 @@ function calculateDistancePerFrame(
 function moveAlongRoute(
   startPosition: [number, number],
   route: [number, number][],
+  startWaypointIndex: number,
   distanceBudget: number
-): [number, number] {
+): {
+  newPosition: [number, number]
+  newWaypointIndex: number
+} {
   let currentPosition = [...startPosition] as [number, number]
   let remainingDistance = distanceBudget
-  let currentSegmentIndex = findWhichSegmentPositionIsOn(currentPosition, route)
+  let currentWaypointIndex = startWaypointIndex
 
   const MINIMUM_DISTANCE = 0.00001
   
   while (remainingDistance > MINIMUM_DISTANCE) {
-    const nextWaypoint = route[currentSegmentIndex + 1]
-    
-    if (!nextWaypoint) {
+    if (currentWaypointIndex >= route.length - 1) {
       currentPosition = route[route.length - 1]
       break
     }
+
+    const nextWaypoint = route[currentWaypointIndex + 1]
 
     const moveResult = moveTowardWaypoint(
       currentPosition,
@@ -67,9 +76,9 @@ function moveAlongRoute(
     remainingDistance = moveResult.remainingDistance
 
     if (moveResult.reachedWaypoint) {
-      currentSegmentIndex++
+      currentWaypointIndex++
       
-      if (currentSegmentIndex >= route.length - 1) {
+      if (currentWaypointIndex >= route.length - 1) {
         break
       }
     } else {
@@ -77,7 +86,10 @@ function moveAlongRoute(
     }
   }
 
-  return currentPosition
+  return {
+    newPosition: currentPosition,
+    newWaypointIndex: currentWaypointIndex
+  }
 }
 
 function moveTowardWaypoint(
@@ -114,38 +126,6 @@ function moveTowardWaypoint(
   }
 }
 
-function findWhichSegmentPositionIsOn(
-  position: [number, number],
-  route: [number, number][]
-): number {
-  let closestSegmentIndex = 0
-  let minimumDistanceFound = Infinity
-
-  for (let i = 0; i < route.length - 1; i++) {
-    const segmentStart = route[i]
-    const segmentEnd = route[i + 1]
-
-    const distanceToStart = getDistance(position, segmentStart)
-    const distanceToEnd = getDistance(position, segmentEnd)
-    const segmentLength = getDistance(segmentStart, segmentEnd)
-    
-    const sumOfDistances = distanceToStart + distanceToEnd
-    const differenceFromSegmentLength = Math.abs(sumOfDistances - segmentLength)
-    
-    const TOLERANCE = 0.001
-    if (differenceFromSegmentLength < TOLERANCE) {
-      return i
-    }
-
-    if (distanceToStart < minimumDistanceFound) {
-      minimumDistanceFound = distanceToStart
-      closestSegmentIndex = i
-    }
-  }
-
-  return closestSegmentIndex
-}
-
 function getDistance(pos1: [number, number], pos2: [number, number]): number {
   const dx = pos2[0] - pos1[0]
   const dy = pos2[1] - pos1[1]
@@ -154,6 +134,10 @@ function getDistance(pos1: [number, number], pos2: [number, number]): number {
 
 export function hasReachedDestination(entity: Entity): boolean {
   if (!entity.route || entity.route.length < 2) {
+    return true
+  }
+  
+  if (entity.currentWaypointIndex >= entity.route.length - 1) {
     return true
   }
   
