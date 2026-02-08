@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MenuBar from './components/MenuBar/MenuBar'
 import MapPanel from './components/MapPanel/MapPanel'
 import SimulationControl from './components/SimulationControl/SimulationControl'
@@ -7,6 +7,8 @@ import DataLog from './components/DataLog/DataLog'
 import './components/Panel.css'
 import './App.css'
 import ModalAboutInfo from './components/Modal/ModalAboutInfo'
+import ModalSimulationEnd from './components/Modal/ModalSimulationEnd'
+import { useSimulationStore } from './store/SimulationStore'
 
 type PanelType = 'controls' | 'unit' | 'log'
 
@@ -16,6 +18,35 @@ function App() {
   const [dragOverPanel, setDragOverPanel] = useState<PanelType | null>(null)
   const [showAboutModal, setShowAboutModal] = useState(false)
   const [measurementMode, setMeasurementMode] = useState(false)
+  const [showEndModal, setShowEndModal] = useState(false)
+  
+  const simulationEnded = useSimulationStore((state) => state.simulationEnded)
+  const units = useSimulationStore((state) => state.units)
+  const resetunits = useSimulationStore((state) => state.resetunits)
+  const setSimulationEnded = useSimulationStore((state) => state.setSimulationEnded)
+
+  useEffect(() => {
+    if (simulationEnded && !showEndModal) {
+      setShowEndModal(true)
+    }
+  }, [simulationEnded, showEndModal])
+
+  const calculateStats = (faction: 'human' | 'alien') => {
+    const factionUnits = units.filter(u => u.faction === faction)
+    return {
+      totalUnits: factionUnits.length,
+      active: factionUnits.filter(u => u.status === 'active').length,
+      damaged: factionUnits.filter(u => u.status === 'damaged').length,
+      destroyed: factionUnits.filter(u => u.status === 'destroyed').length,
+      reachedDestination: factionUnits.filter(u => u.currentWaypointIndex >= u.route.length - 1 && u.status !== 'destroyed').length
+    }
+  }
+
+  const handleEndModalClose = () => {
+    setShowEndModal(false)
+    setSimulationEnded(false)
+    resetunits()
+  }
 
   const handleDragStart = (panel: PanelType) => {
     setDraggedPanel(panel)
@@ -107,6 +138,13 @@ function App() {
       <ModalAboutInfo 
         showAboutModal={showAboutModal} 
         setShowAboutModal={() => setShowAboutModal(false)}
+      />
+
+      <ModalSimulationEnd
+        isOpen={showEndModal}
+        onClose={handleEndModalClose}
+        humanStats={calculateStats('human')}
+        alienStats={calculateStats('alien')}
       />
     </div>
   )

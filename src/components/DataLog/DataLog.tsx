@@ -15,7 +15,7 @@ const DataLog = () => {
 
   const formatTime = () => {
     const now = new Date()
-    return now.toLocaleTimeString('en-US', { hour12: false })
+    return now.toLocaleTimeString('cs-CZ')
   }
 
   return (

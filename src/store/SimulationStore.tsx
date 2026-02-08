@@ -11,6 +11,9 @@ interface SimulationState {
   setIsRunning: (running: boolean) => void
   toggleRunning: () => void
   
+  simulationEnded: boolean
+  setSimulationEnded: (ended: boolean) => void
+  
   speed: number
   setSpeed: (speed: number) => void
   
@@ -37,6 +40,9 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   isRunning: false,
   setIsRunning: (running) => set({ isRunning: running }),
   toggleRunning: () => set((state) => ({ isRunning: !state.isRunning })),
+  
+  simulationEnded: false,
+  setSimulationEnded: (ended) => set({ simulationEnded: ended }),
   
   speed: 50,
   setSpeed: (speed) => set({ speed }),
@@ -94,11 +100,12 @@ export const useSimulationStore = create<SimulationState>((set) => ({
     return { 
       units: updatedunits,
       combatLogs: [...state.combatLogs, ...newCombatLogs].slice(-50),
-      isRunning: allFinished ? false : state.isRunning
+      isRunning: allFinished ? false : state.isRunning,
+      simulationEnded: allFinished ? true : state.simulationEnded
     }
   }),
   
-  resetunits: () => set({ units: mockunits }),
+  resetunits: () => set({ units: mockunits, simulationEnded: false, combatLogs: [], currentTime: 0 }),
   
   combatLogs: [],
   addCombatLog: (log) => set((state) => ({

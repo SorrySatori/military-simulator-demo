@@ -1,0 +1,110 @@
+.simulation-end-content {
+  padding: 10px 0;
+}
+
+.winner-announcement {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(155, 89, 182, 0.2));
+  border-radius: 8px;
+}
+
+.winner-announcement h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #f39c12;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.faction-stats {
+  background: rgba(52, 73, 94, 0.5);
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.human-stats {
+  border-color: #3498db;
+}
+
+.alien-stats {
+  border-color: #e74c3c;
+}
+
+.faction-stats h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(236, 240, 241, 0.2);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #ecf0f1;
+}
+
+.stat-row.survival-rate {
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(236, 240, 241, 0.2);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.stat-value.active {
+  color: #2ecc71;
+}
+
+.stat-value.damaged {
+  color: #f39c12;
+}
+
+.stat-value.destroyed {
+  color: #e74c3c;
+}
+
+.end-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.restart-btn {
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.restart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #2980b9, #3498db);
+}
+
+.restart-btn:active {
+  transform: translateY(0);
+}
