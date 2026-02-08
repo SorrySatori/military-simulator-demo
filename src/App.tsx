@@ -6,6 +6,7 @@ import EntityInfo from './components/EntityInfo/EntityInfo'
 import DataLog from './components/DataLog/DataLog'
 import './components/Panel.css'
 import './App.css'
+import ModalAboutInfo from './components/Modal/ModalAboutInfo'
 
 type PanelType = 'controls' | 'entity' | 'log'
 
@@ -13,6 +14,8 @@ function App() {
   const [panelOrder, setPanelOrder] = useState<PanelType[]>(['controls', 'entity', 'log'])
   const [draggedPanel, setDraggedPanel] = useState<PanelType | null>(null)
   const [dragOverPanel, setDragOverPanel] = useState<PanelType | null>(null)
+  const [showAboutModal, setShowAboutModal] = useState(false)
+  const [measurementMode, setMeasurementMode] = useState(false)
 
   const handleDragStart = (panel: PanelType) => {
     setDraggedPanel(panel)
@@ -85,15 +88,26 @@ function App() {
 
   return (
     <div className="app">
-      <MenuBar />
+      <MenuBar 
+        onAboutClick={() => setShowAboutModal(true)}
+        onMeasureDistanceClick={() => setMeasurementMode(prev => !prev)}
+      />
       <div className="content-container">
         <div key="map">
-          <MapPanel />
+          <MapPanel 
+            measurementMode={measurementMode} 
+            onCloseMeasurement={() => setMeasurementMode(false)}
+          />
         </div>
         <div className="sidebar">
           {panelOrder.map(panel => renderPanel(panel))}
         </div>
       </div>
+
+      <ModalAboutInfo 
+        showAboutModal={showAboutModal} 
+        setShowAboutModal={() => setShowAboutModal(false)}
+      />
     </div>
   )
 }

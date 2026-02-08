@@ -13,3 +13,88 @@
     width: 1200px;
     height: 930px;
   }
+
+  .map-content {
+    position: relative;
+  }
+
+  .measurement-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  .measurement-info {
+    background: rgba(44, 62, 80, 0.95);
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 15px 20px;
+    min-width: 250px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: all;
+  }
+
+  .measurement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .measurement-info h4 {
+    margin: 0;
+    color: #3498db;
+    font-size: 16px;
+  }
+
+  .close-measurement-btn {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+
+  .close-measurement-btn:hover {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+  }
+
+  .measurement-info p {
+    margin: 5px 0;
+    color: #ecf0f1;
+    font-size: 14px;
+  }
+
+  .distance-result {
+    font-size: 18px !important;
+    color: #2ecc71 !important;
+    margin: 10px 0 !important;
+  }
+
+  .reset-measurement-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .reset-measurement-btn:hover {
+    background: #2980b9;
+  }

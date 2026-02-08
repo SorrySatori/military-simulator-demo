@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
@@ -43,12 +43,28 @@ const createRouteStyle = (entity: Entity): Style => {
   })
 }
 
-const MapPanel = () => {
+interface MapPanelProps {
+  measurementMode?: boolean
+  onCloseMeasurement?: () => void
+}
+
+const MapPanel = ({ measurementMode = false, onCloseMeasurement }: MapPanelProps) => {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<Map | null>(null)
   const vectorSourceRef = useRef<VectorSource | null>(null)
   const setSelectedEntity = useSimulationStore((state) => state.setSelectedEntity)
   const entities = useSimulationStore((state) => state.entities)
+  const [selectedUnits, setSelectedUnits] = useState<Entity[]>([])
+  const [distance, setDistance] = useState<number | null>(null)
+
+  const calculateDistance = (pos1: [number, number], pos2: [number, number]): number => {
+    const dx = pos2[0] - pos1[0]
+    const dy = pos2[1] - pos1[1]
+    const distanceInDegrees = Math.sqrt(dx * dx + dy * dy)
+    // Convert degrees to kilometers (approximate)
+    const distanceInKm = distanceInDegrees * 111
+    return distanceInKm
+  }
 
   useEffect(() => {
     if (!mapRef.current) return
@@ -99,7 +115,22 @@ const MapPanel = () => {
       map.forEachFeatureAtPixel(evt.pixel, (feature) => {
         const entity = feature.get('entity')
         if (entity) {
-          setSelectedEntity(entity)
+          if (measurementMode) {
+            setSelectedUnits(prev => {
+              if (prev.length === 0) {
+                return [entity]
+              } else if (prev.length === 1) {
+                const dist = calculateDistance(prev[0].position, entity.position)
+                setDistance(dist)
+                return [prev[0], entity]
+              } else {
+                setDistance(null)
+                return [entity]
+              }
+            })
+          } else {
+            setSelectedEntity(entity)
+          }
         }
       })
     })
@@ -115,7 +146,14 @@ const MapPanel = () => {
     return () => {
       map.setTarget(undefined)
     }
-  }, [setSelectedEntity])
+  }, [setSelectedEntity, measurementMode])
+
+  useEffect(() => {
+    if (!measurementMode) {
+      setSelectedUnits([])
+      setDistance(null)
+    }
+  }, [measurementMode])
 
   useEffect(() => {
     if (!vectorSourceRef.current) return
@@ -154,6 +192,34 @@ const MapPanel = () => {
       </div>
       <div className="panel-content map-content">
         <div ref={mapRef} className="map-container"></div>
+        {measurementMode && (
+          <div className="measurement-overlay">
+            <div className="measurement-info">
+              <div className="measurement-header">
+                <h4>📏 Distance Measurement</h4>
+                <button 
+                  className="close-measurement-btn" 
+                  onClick={onCloseMeasurement}
+                  title="Close measurement mode"
+                >×</button>
+              </div>
+              {selectedUnits.length === 0 && <p>Click on the first unit...</p>}
+              {selectedUnits.length === 1 && (
+                <p>First unit: <strong>{selectedUnits[0].callSign}</strong><br/>Click on the second unit...</p>
+              )}
+              {selectedUnits.length === 2 && distance !== null && (
+                <div>
+                  <p><strong>{selectedUnits[0].callSign}</strong> → <strong>{selectedUnits[1].callSign}</strong></p>
+                  <p className="distance-result">Distance: <strong>{distance.toFixed(2)} km</strong></p>
+                  <button onClick={() => {
+                    setSelectedUnits([])
+                    setDistance(null)
+                  }} className="reset-measurement-btn">Measure Again</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

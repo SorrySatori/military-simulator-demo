@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import './MenuBar.css'
 
-const MenuBar = () => {
+interface MenuBarProps {
+  onAboutClick: () => void
+  onMeasureDistanceClick: () => void
+}
+
+const MenuBar = ({ onAboutClick, onMeasureDistanceClick }: MenuBarProps) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
 
   const toggleMenu = (menu: string) => {
@@ -40,7 +45,10 @@ const MenuBar = () => {
           <button onClick={() => toggleMenu('tools')}>Tools</button>
           {activeMenu === 'tools' && (
             <div className="dropdown">
-              <div className="dropdown-item">Measure Distance</div>
+              <div className="dropdown-item" onClick={() => {
+                onMeasureDistanceClick()
+                setActiveMenu(null)
+              }}>Measure Distance</div>
               <div className="dropdown-item">Settings</div>
             </div>
           )}
@@ -51,7 +59,10 @@ const MenuBar = () => {
           {activeMenu === 'help' && (
             <div className="dropdown">
               <div className="dropdown-item">Documentation</div>
-              <div className="dropdown-item">About</div>
+              <div className="dropdown-item" onClick={() => {
+                onAboutClick()
+                setActiveMenu(null)
+              }}>About</div>
             </div>
           )}
         </div>
